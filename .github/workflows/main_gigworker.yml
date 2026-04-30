@@ -46,7 +46,7 @@ jobs:
         with:
           name: python-app
           path: |
-            .
+            gig_platform_backend/
             !antenv/
 
       # 🚫 Opting Out of Oryx Build
