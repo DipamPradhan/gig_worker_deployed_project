@@ -1,0 +1,114 @@
+###
+POST http://127.0.0.1:8000/accounts/register/ HTTP/1.1
+Content-Type: application/json
+ 
+{
+  "email": "testuser@gmail.com",
+  "first_name": "User",
+  "last_name": "Test",
+  "phone_number": "+9779830000000",
+  "password": "Test@12345",
+  "password2": "Test@12345"
+}
+
+
+###
+POST http://127.0.0.1:8000/api/token/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "test2@gmail.com",
+  "password": "Test@12345"
+}
+
+
+###
+
+###
+POST http://127.0.0.1:8000/accounts/become-worker/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzI5Mjg0LCJpYXQiOjE3NzEzMjc0ODQsImp0aSI6Ijg2OGQzNWQyMzJlNTQyM2Y5Y2I4ZjZlODEwNzY4NmEyIiwidXNlcl9pZCI6ImM4NGEzOTI4LTU0NzItNDVkZC1hNzlhLTJhY2I1M2FkODRiZSJ9.veSfCIDvfUaTpuU91VmYskEKuOiWnQ4b3QWTiHGmiKo
+Content-Type: application/json
+
+{
+  "service_category": "Electrician",
+  "skills": "Wiring, repair",
+  "bio": "I have 2 years experience",
+  "hourly_rate": "250.00",
+  "service_latitude": "27.42092",
+  "service_longitude": "85.20471",
+  "service_radius_km": "10.00"
+}
+
+
+### Upload Worker Document
+POST http://127.0.0.1:8000/accounts/worker/documents/upload/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzI5Mjg0LCJpYXQiOjE3NzEzMjc0ODQsImp0aSI6Ijg2OGQzNWQyMzJlNTQyM2Y5Y2I4ZjZlODEwNzY4NmEyIiwidXNlcl9pZCI6ImM4NGEzOTI4LTU0NzItNDVkZC1hNzlhLTJhY2I1M2FkODRiZSJ9.veSfCIDvfUaTpuU91VmYskEKuOiWnQ4b3QWTiHGmiKo
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="document_type"
+
+Citizenship
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="document_number"
+
+123456789
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="document_file"; filename="citizenship.jpg"
+Content-Type: image/jpeg
+
+< ./static/citizenship.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+###
+
+GET http://127.0.0.1:8000/accounts/profile/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzM3OTgyLCJpYXQiOjE3NzEzMzYxODIsImp0aSI6IjE1YTU0YzU3ZWQzODQyNDhhN2UzOTA5OGZhNTNkYjYzIiwidXNlcl9pZCI6IjhiZDIyMjE1LTU1NmItNGRlOC04Y2IzLTg1OGE3Yjg5NGU0MCJ9.XTH7T3DxoIHz6YN2ntb3n0fc6pju9SZ_00Eh6p8aJdQ
+###
+PATCH http://127.0.0.1:8000/accounts/profile/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzM3OTgyLCJpYXQiOjE3NzEzMzYxODIsImp0aSI6IjE1YTU0YzU3ZWQzODQyNDhhN2UzOTA5OGZhNTNkYjYzIiwidXNlcl9pZCI6IjhiZDIyMjE1LTU1NmItNGRlOC04Y2IzLTg1OGE3Yjg5NGU0MCJ9.XTH7T3DxoIHz6YN2ntb3n0fc6pju9SZ_00Eh6p8aJdQ
+Content-Type: application/json
+
+{
+  "current_latitude": "27.42081",
+  "current_longitude": "85.20486",
+  "current_address": "Bijaychowk, Kathmandu",
+  "preferred_radius_km":"2.00"
+}
+
+
+###
+GET http://127.0.0.1:8000/accounts/worker/profile/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzM4MDQ1LCJpYXQiOjE3NzEzMzYyNDUsImp0aSI6IjRmNzgwN2QyNTNlYjRjNGFhODgxMGY0MzFhMGNlMGRjIiwidXNlcl9pZCI6ImM4NGEzOTI4LTU0NzItNDVkZC1hNzlhLTJhY2I1M2FkODRiZSJ9.-8P9-0hTDdLkEwJL7bDsRqqqXr8LHLiteUx1M3SirY8
+###
+GET http://127.0.0.1:8000/accounts/worker/documents/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMyOTkxLCJpYXQiOjE3NzEzMzExOTEsImp0aSI6IjMwMDk0NmEwMjNkNzQ0OWI4ZDkxZWEzMTU0ZTE1YTYwIiwidXNlcl9pZCI6ImI2ZTAyN2MwLTcxZjgtNGE2Ni05NmU5LWQxMzFlODg1NjQ0NSJ9.yEV1rXE-8WgVNyQ4neu1Zu5eJkojHXwQC-5r-1l3PVk
+
+###
+PATCH http://127.0.0.1:8000/accounts/worker/profile/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzM4MDQ1LCJpYXQiOjE3NzEzMzYyNDUsImp0aSI6IjRmNzgwN2QyNTNlYjRjNGFhODgxMGY0MzFhMGNlMGRjIiwidXNlcl9pZCI6ImM4NGEzOTI4LTU0NzItNDVkZC1hNzlhLTJhY2I1M2FkODRiZSJ9.-8P9-0hTDdLkEwJL7bDsRqqqXr8LHLiteUx1M3SirY8
+Content-Type: application/json
+
+{
+  "skills": "Wiring, repair, installation and maintenance",
+  "bio": "I have 3 years experience in electrical work.",
+  "hourly_rate": "210.00",
+  "service_latitude": "27.42092",
+  "service_longitude": "85.20471",
+  "service_radius_km": "15.00"
+}
+###
+GET http://127.0.0.1:8000/accounts/me/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxNDMxNzA3LCJpYXQiOjE3NzE0Mjk5MDcsImp0aSI6ImVmNzVjMWFiYWMwMDQzZmU5ZGU4MmY5OTM1M2RmNzIyIiwidXNlcl9pZCI6ImM4NGEzOTI4LTU0NzItNDVkZC1hNzlhLTJhY2I1M2FkODRiZSJ9.b5tnSn-j9OlpeiCJxa4yb4_mKm2r8OCzbKZ6vEk0Y1c
+###
+
+DELETE http://127.0.0.1:8000/accounts/profile/delete/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMyOTkxLCJpYXQiOjE3NzEzMzExOTEsImp0aSI6IjMwMDk0NmEwMjNkNzQ0OWI4ZDkxZWEzMTU0ZTE1YTYwIiwidXNlcl9pZCI6ImI2ZTAyN2MwLTcxZjgtNGE2Ni05NmU5LWQxMzFlODg1NjQ0NSJ9.yEV1rXE-8WgVNyQ4neu1Zu5eJkojHXwQC-5r-1l3PVk
+
+###
+GET http://127.0.0.1:8000/accounts/worker/profile/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzM1MjEwLCJpYXQiOjE3NzEzMzM0MTAsImp0aSI6Ijc1ZmQ0MDZhNjkyNzQwMjk5NTkzY2M1MjRmNGE5OWIwIiwidXNlcl9pZCI6IjExNGFjNGNhLTUyOWQtNDA2MS1iZmRjLWNhN2M0ODA0YWE1MiJ9.JT5cj6zS-K6ywuNA6RL4ru78ZN70rDB_TPfor16wghA
+###
+GET http://127.0.0.1:8000/accounts/worker/documents/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzM4MDQ1LCJpYXQiOjE3NzEzMzYyNDUsImp0aSI6IjRmNzgwN2QyNTNlYjRjNGFhODgxMGY0MzFhMGNlMGRjIiwidXNlcl9pZCI6ImM4NGEzOTI4LTU0NzItNDVkZC1hNzlhLTJhY2I1M2FkODRiZSJ9.-8P9-0hTDdLkEwJL7bDsRqqqXr8LHLiteUx1M3SirY8

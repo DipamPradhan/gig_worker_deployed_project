@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %} 
+{% load static %} 
+{% block title %}Gig Worker Control Center{% endblock %} 
+{% block extrastyle %} 
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/custom.css' %}?v=2">
+{% endblock %} 
+{% block branding %}
+<div class="gw-branding">
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}">Gig Worker Admin</a>
+  </h1>
+  <p class="gw-subtitle">Manage workers, verification & services</p>
+</div>
+{% endblock %} 
+{% block nav-global %}
+<div class="gw-nav-note">
+  Keep records accurate. Changes are reflected live in API responses.
+</div>
+{% endblock %}
