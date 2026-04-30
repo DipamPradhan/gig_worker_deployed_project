@@ -1,7 +1,22 @@
 import axios from "axios";
 
 const isDevelopment = import.meta.env.MODE === "development";
-const API_BASE_URL = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+// Allow a runtime override (set `window.__API_BASE_URL__` from hosting env)
+const runtimeApiBase = typeof window !== "undefined" ? window.__API_BASE_URL__ : undefined;
+const envApiBase = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+const API_BASE_URL = runtimeApiBase || envApiBase || "";
+
+if (!API_BASE_URL) {
+  // Helpful warning in console for production debugging
+  // This will make it obvious in the browser that the API URL was not provided
+  // and that requests will be sent to the frontend host (causing 404s).
+  // Remove or silence this in a stable production release if desired.
+  // eslint-disable-next-line no-console
+  console.warn("API base URL is not defined. Set VITE_API_BASE_URL_PROD at build time or window.__API_BASE_URL__ at runtime.");
+} else {
+  // eslint-disable-next-line no-console
+  console.debug("Using API base URL:", API_BASE_URL);
+}
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
