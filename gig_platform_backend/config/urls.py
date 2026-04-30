@@ -24,7 +24,7 @@ from rest_framework_simplejwt.views import (
 )
 from django.conf.urls.static import static
 
-from views import home
+from .views import home
 
 urlpatterns = [
     path("",home),
