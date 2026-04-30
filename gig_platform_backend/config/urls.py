@@ -24,7 +24,10 @@ from rest_framework_simplejwt.views import (
 )
 from django.conf.urls.static import static
 
+from views import home
+
 urlpatterns = [
+    path("",home),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("services/", include("services.urls")),
