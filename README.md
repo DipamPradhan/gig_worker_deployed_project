@@ -27,23 +27,19 @@ A concise guide to this repository: a Django backend and a Vite + React frontend
 ## Quickstart — Backend (local development)
 
 1. Open a terminal and navigate to `gig_platform_backend`:
-
-cd gig_platform_backend
+    `cd gig_platform_backend`
 
 2. Create and activate a virtual environment:
+- Windows:
+    `python -m venv .venv`
+    `.venv\Scripts\activate`  # cmd.exe
 
-Windows:
-python -m venv .venv
-.venv\Scripts\activate  # cmd.exe
-
-Mac:
-python3 -m venv .venv
-source .venv/bin/activate
+- Mac:
+    `python3 -m venv .venv`
+    `source .venv/bin/activate`
 
 3. Install Python dependencies:
-
-python -m pip install -r requirements.txt
-
+    `python -m pip install -r requirements.txt`
 
 4. Configure environment variables (example using `.env` or your shell):
 
@@ -51,35 +47,27 @@ python -m pip install -r requirements.txt
 - `SECRET_KEY`, `DATABASE_URL` see .env.example in backend
 
 5. Apply database migrations and create a superuser:
-
-python manage.py migrate
-python manage.py createsuperuser
+    `python manage.py migrate`
+    `python manage.py createsuperuser`
 
 6. Run the development server:
-
-python manage.py runserver
-
+    `python manage.py runserver`
 By default Django will serve on `http://127.0.0.1:8000/`.
-
 ## Quickstart — Frontend (local development)
 
 1. Open a terminal and navigate to `gig_platfrom_frontend`:
-
-cd gig_platfrom_frontend
+    `cd gig_platfrom_frontend`
 
 2. Install node dependencies:
-
-npm install
+    `npm install`
 
 3. Start the dev server (Vite):
-
-npm run dev
+    `npm run dev`
 
 The frontend dev server typically runs at `http://localhost:5173/` — it will proxy or call the backend API at the configured API base URL in `src/api`.
-see src/api/axios.js :to use the actual backend url 
+see `src/api/axios.js` :to use the actual backend url 
 
 # Gig Worker Platform Frontend
-
 A React-based frontend for the gig worker platform, built with Vite, Tailwind CSS, and React Router.
 
 ## Table of Contents
