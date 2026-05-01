@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faClipboardList, faHelmetSafety} from "@fortawesome/free-solid-svg-icons";
@@ -22,28 +22,62 @@ const CustomerDashboard = () => {
   const { user } = useAuth();
   const { loading, error, execute, clearError } = useApi();
   const [requests, setRequests] = useState([]);
+  
+  const prevRequestsRef = useRef([]);
 
-  const fetchRequests = useCallback(async () => {
-    try {
-      const data = await execute(() => servicesService.getRequests());
-      // Get recent requests (last 5)
-      setRequests(
-        Array.isArray(data)
-          ? data.slice(0, 5)
-          : data.results?.slice(0, 5) || [],
-      );
-    } catch (err) {
-      // Error handled by useApi
-    }
-  }, [execute]);
+  const getRecentRequests = useCallback(async () => {
+    const data = await servicesService.getRequests();
+    return Array.isArray(data)
+      ? data.slice(0, 5)
+      : data.results?.slice(0, 5) || [];
+  }, []);
+
+  const areStatusesEqual = (oldRequests = [], newRequests = []) => {
+    if (oldRequests.length !== newRequests.length) return false;
+
+    return oldRequests.every((oldRequest, index) => {
+      const newRequest = newRequests[index];
+      const oldStatus = oldRequest?.status?.toString()?.trim().toLowerCase() || "";
+      const newStatus = newRequest?.status?.toString()?.trim().toLowerCase() || "";
+      return oldRequest?.id === newRequest?.id && oldStatus === newStatus;
+    });
+  };
 
   useEffect(() => {
-    fetchRequests();
-    const interval = setInterval(fetchRequests, 5000);
-    return () => clearInterval(interval);
-  }, [fetchRequests]);
+    const loadInitialRequests = async () => {
+      try {
+        const data = await execute(getRecentRequests);
+        if (data) {
+          setRequests(data);
+          prevRequestsRef.current = data;
+        }
+      } catch (err) {
+        // Error handled by useApi
+      }
+    };
 
-  const activeRequest = requests.find(
+    loadInitialRequests();
+  }, [execute, getRecentRequests]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const newData = await getRecentRequests();
+        if (!newData) return;
+
+        if (!areStatusesEqual(prevRequestsRef.current, newData)) {
+          setRequests(newData);
+          prevRequestsRef.current = newData;
+        }
+      } catch (err) {
+        // Ignore polling failures to avoid flashing the dashboard
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [getRecentRequests]);
+
+  const activeRequest = requests?.find(
     (request) =>
       request?.status &&
       !["completed", "cancelled"].includes(request.status.toLowerCase()),
@@ -103,7 +137,7 @@ const CustomerDashboard = () => {
 
         {loading ? (
          <></>
-        ) : requests.length === 0 ? (
+        ) : requests?.length === 0 ? (
           <EmptyState
             title="No requests yet"
             message="You haven't created any service requests yet."
