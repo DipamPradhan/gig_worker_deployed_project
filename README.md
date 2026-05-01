@@ -6,8 +6,12 @@ A Django-based backend for the gig worker platform, providing authentication, ac
 - [Setup](#setup)
 - [Project Structure](#project-structure)
 - [Features](#features)
-- [API Integration](#api-integration)
-- [Testing Checklist](#testing-checklist)
+
+## Table of Contents Frontend
+
+- [Setup](#setupfr)
+- [Project Structure](#project-structurefr)
+- [Features](#featuresfr)
 
 ## Setup
 
@@ -23,12 +27,16 @@ A Django-based backend for the gig worker platform, providing authentication, ac
 # Navigate to the backend project directory
 cd gig_platform_backend
 
-# Create and activate a virtual environment
+#Create and activate virtual environment
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\activate
+
+#mac
+python3 -m venv .venv
+.venv/bin/activate
 
 # Install backend dependencies
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 # Run database migrations
 python manage.py migrate
@@ -44,14 +52,7 @@ The backend will be available at `http://127.0.0.1:8000`.
 
 ### Environment Variables
 
-Use your shell or a `.env` file for any required settings such as:
-
-```env
-SECRET_KEY=your-secret-key
-DEBUG=True
-DATABASE_URL=sqlite:///db.sqlite3
-```
-
+Use your `.env` file for any required settings check `.env.example`
 ## Project Structure
 
 ```
@@ -73,41 +74,11 @@ gig_platform_backend/
 - `services/`: service requests, categories, worker dispatch flows
 - `ratings/`: reviews, sentiment analysis, and recommendation scores
 
-## Features
-
-### Authentication
-
-- User registration and login support
-- Token-based authentication
-- Profile and worker profile management
-
-### Service Management
-
-- Service category management
-- Customer request creation and tracking
-- Worker availability and request handling
-
-### Ratings and Recommendations
-
-- Worker reviews and ratings
-- Sentiment metadata for reviews
-- Recommendation and ranking support
-
-### Admin Operations
-
-- Worker verification workflow
-- Admin access to accounts and service data
-- Django admin customization
-
-## API Integration
-
 ### Base URL
 
 ```text
 http://127.0.0.1:8000
 ```
-
-### Common Endpoints
 
 #### Accounts
 
@@ -130,54 +101,10 @@ http://127.0.0.1:8000
 - `GET /ratings/sentiments/` - Review sentiment data
 - `GET /ratings/leaderboard/` - Worker leaderboard
 
-## Testing Checklist
-
-### Backend Flow
-
-1. **Run the server**
-   - [ ] Activate the virtual environment
-   - [ ] Install dependencies
-   - [ ] Run `python manage.py migrate`
-   - [ ] Start the server with `python manage.py runserver`
-
-2. **Register and authenticate**
-   - [ ] Register a new user through the API
-   - [ ] Confirm token login works
-   - [ ] Verify `/accounts/me/` returns the authenticated user
-
-3. **Manage profiles**
-   - [ ] Update customer profile fields
-   - [ ] Register a worker profile
-   - [ ] Upload or verify worker documents if enabled
-
-4. **Create service requests**
-   - [ ] Create a new request
-   - [ ] Confirm it appears in the request list
-   - [ ] Update worker status through the service endpoints
-
-5. **Review and ratings**
-   - [ ] Submit a worker review
-   - [ ] Confirm sentiment and leaderboard endpoints respond correctly
-
-### API Smoke Test
-
-- [ ] Open `api.http`
-- [ ] Send a request to a health or auth endpoint
-- [ ] Confirm the response matches the expected schema
-
 # Gig Worker Platform Frontend
 A React-based frontend for the gig worker platform, built with Vite, Tailwind CSS, and React Router.
 
-## Table of Contents
-
-- [Setup](#setup)
-- [Project Structure](#project-structure)
-- [Features](#features)
-- [API Integration](#api-integration)
-- [Testing Checklist](#testing-checklist)
-
-## Setup
-
+## Setupfr
 ### Prerequisites
 
 - Node.js 18+
@@ -208,7 +135,7 @@ The application will be available at `http://localhost:5173`
 VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-## Project Structure
+## Project Structurefr
 
 ```
 gig_worker_frontend/
@@ -290,7 +217,7 @@ gig_worker_frontend/
 └── vite.config.js
 ```
 
-## Features
+## Featuresfr
 
 ### Authentication
 
@@ -322,153 +249,8 @@ gig_worker_frontend/
 - List and verify pending workers
 - Verify worker documents
 
-## API Integration
-
 ### Base URL
 
 ```
 http://127.0.0.1:8000
 ```
-
-### Endpoints Used
-
-#### Auth
-
-- `POST /api/token/` - Login
-- `POST /api/token/refresh/` - Refresh token
-
-#### Accounts
-
-- `POST /accounts/register/` - Register
-- `GET /accounts/me/` - Get current user
-- `GET, PATCH /accounts/profile/` - Profile management
-- `POST /accounts/become-worker/` - Register as worker
-- `GET, PATCH /accounts/worker/profile/` - Worker profile
-- `GET /accounts/worker/documents/` - List documents
-- `POST /accounts/worker/documents/upload/` - Upload document
-- `PATCH /accounts/worker/availability/` - Update availability
-- `GET /accounts/admin/workers/pending/` - List pending workers
-- `POST /accounts/admin/workers/{id}/verify/` - Verify worker
-- `POST /accounts/admin/documents/{id}/verify/` - Verify document
-
-#### Services
-
-- `GET /services/categories/` - List categories
-- `GET /services/recommended-workers/` - Search workers
-- `GET, POST /services/requests/` - Service requests
-- `GET /services/worker/inbox/` - Worker inbox
-- `POST /services/worker/inbox/{id}/action/` - Accept/reject
-- `POST /services/requests/{id}/worker-status/` - Update status
-
-#### Ratings
-
-- `GET, POST /ratings/reviews/` - Reviews
-- `GET /ratings/sentiments/` - Sentiments
-- `GET /ratings/leaderboard/` - Leaderboard
-
-## Testing Checklist
-
-### Customer Flow
-
-1. **Registration & Login**
-   - [ ] Open http://localhost:5173/register
-   - [ ] Fill in registration form and submit
-   - [ ] Verify success message and redirect to login
-   - [ ] Login with created credentials
-   - [ ] Verify redirect to customer dashboard
-
-2. **Update Profile**
-   - [ ] Go to Profile page via navbar
-   - [ ] Update profile fields (first name, address, coordinates)
-   - [ ] Verify success message
-
-3. **Search Workers**
-   - [ ] Navigate to "Find Workers"
-   - [ ] Select a service category
-   - [ ] Set search radius
-   - [ ] Click "Search Workers"
-   - [ ] Verify workers are displayed with ratings
-
-4. **Create Service Request**
-   - [ ] Navigate to "New Request"
-   - [ ] Fill in service category, description, address
-   - [ ] Submit request
-   - [ ] Verify success and redirect to My Requests
-
-5. **View Requests**
-   - [ ] Navigate to "My Requests"
-   - [ ] Verify created request appears with PENDING status
-   - [ ] Check status updates as worker accepts
-
-6. **Submit Review (after completion)**
-   - [ ] Navigate to completed request
-   - [ ] Click "Leave Review"
-   - [ ] Select star rating and add comment
-   - [ ] Submit review
-
-7. **View Leaderboard**
-   - [ ] Navigate to "Leaderboard"
-   - [ ] Verify workers are listed with rankings
-   - [ ] Click "View Reviews" to see worker reviews
-
-### Worker Flow
-
-1. **Become Worker**
-   - [ ] Register as new user
-   - [ ] Navigate to /worker/become-worker
-   - [ ] Fill in service category and bio
-   - [ ] Submit form
-   - [ ] Verify redirect to document upload
-
-2. **Upload Document**
-   - [ ] On document upload page
-   - [ ] Select document type
-   - [ ] Choose file to upload
-   - [ ] Submit
-   - [ ] Verify document appears in list with PENDING status
-
-3. **Wait for Verification**
-   - [ ] Dashboard shows "Verification Pending" alert
-   - [ ] Cannot set status to ACTIVE until verified
-
-4. **Set Availability (after admin approval)**
-   - [ ] Navigate to "Availability"
-   - [ ] Click on ACTIVE status
-   - [ ] Verify status changes
-
-5. **View Inbox**
-   - [ ] Navigate to "Inbox"
-   - [ ] When customer creates request, broadcast appears
-   - [ ] Accept or decline request
-
-6. **Update Job Status**
-   - [ ] After accepting, go to "My Jobs"
-   - [ ] Click status buttons in order: ARRIVING → IN_PROGRESS → COMPLETED
-   - [ ] Verify status updates
-
-### Admin Flow
-
-1. **Login as Admin**
-   - [ ] Login with admin credentials (staff/superuser account)
-   - [ ] Verify redirect to admin dashboard
-
-2. **Review Pending Workers**
-   - [ ] Navigate to "Pending Workers"
-   - [ ] View worker details
-   - [ ] Click "Approve" or "Reject"
-   - [ ] Verify worker is removed from pending list
-
-3. **Verify Documents**
-   - [ ] Navigate to "Documents"
-   - [ ] View document details
-   - [ ] Click "Approve" or "Reject"
-   - [ ] Verify document status updates
-
-### Edge Cases
-
-- [ ] Verify 404 page for unknown routes
-- [ ] Verify logout clears tokens and redirects
-- [ ] Verify protected routes redirect to login when not authenticated
-- [ ] Verify role-based routing (customer can't access worker pages)
-- [ ] Verify error messages display for failed API calls
-- [ ] Test on mobile viewport for responsive design
