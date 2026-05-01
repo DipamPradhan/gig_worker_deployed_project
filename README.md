@@ -1,3 +1,83 @@
+# Gig Platform (Backend + Frontend)
+
+A concise guide to this repository: a Django backend and a Vite + React frontend.
+
+## Project overview
+
+- `gig_platform_backend/`: Django backend (APIs, models, serializersm, migrations, admin).
+- `gig_platfrom_frontend/`: Vite + React frontend (UI, components, API client).
+
+## Repo structure (top-level)
+
+- `gig_platform_backend/`
+  - `manage.py` — Django management entrypoint
+  - `requirements.txt` — Python dependencies
+  - `config/` — Django project settings, ASGI/WSGI, urls
+  - `accounts/`, `services/`, `ratings/` — app modules with models, views, serializers
+- `gig_platfrom_frontend/`
+  - `package.json` — frontend dependencies & scripts
+  - `src/` — React app source (components, pages, API helpers)
+
+## Prerequisites
+
+- Python 3.11 and pip
+- Node 22LTS and npm (or yarn/pnpm)
+- (Optional) PostgreSQL or other DB if you configure production settings
+
+## Quickstart — Backend (local development)
+
+1. Open a terminal and navigate to `gig_platform_backend`:
+
+cd gig_platform_backend
+
+2. Create and activate a virtual environment:
+
+Windows:
+python -m venv .venv
+.venv\Scripts\activate  # cmd.exe
+
+Mac:
+python3 -m venv .venv
+source .venv/bin/activate
+
+3. Install Python dependencies:
+
+python -m pip install -r requirements.txt
+
+
+4. Configure environment variables (example using `.env` or your shell):
+
+- `DJANGO_SETTINGS_MODULE=config.settings` (the default manage.py should already point to the right settings)
+- `SECRET_KEY`, `DATABASE_URL` see .env.example in backend
+
+5. Apply database migrations and create a superuser:
+
+python manage.py migrate
+python manage.py createsuperuser
+
+6. Run the development server:
+
+python manage.py runserver
+
+By default Django will serve on `http://127.0.0.1:8000/`.
+
+## Quickstart — Frontend (local development)
+
+1. Open a terminal and navigate to `gig_platfrom_frontend`:
+
+cd gig_platfrom_frontend
+
+2. Install node dependencies:
+
+npm install
+
+3. Start the dev server (Vite):
+
+npm run dev
+
+The frontend dev server typically runs at `http://localhost:5173/` — it will proxy or call the backend API at the configured API base URL in `src/api`.
+see src/api/axios.js :to use the actual backend url 
+
 # Gig Worker Platform Frontend
 
 A React-based frontend for the gig worker platform, built with Vite, Tailwind CSS, and React Router.
@@ -306,23 +386,3 @@ http://127.0.0.1:8000
 - [ ] Verify role-based routing (customer can't access worker pages)
 - [ ] Verify error messages display for failed API calls
 - [ ] Test on mobile viewport for responsive design
-
-## Scripts
-
-```bash
-# Development
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint
-npm run lint
-```
-
-## License
-
-MIT
