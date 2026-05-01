@@ -1,4 +1,5 @@
 
+import { memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChalkboard, faMotorcycle, faUserGear, faGears, faCheckDouble} from "@fortawesome/free-solid-svg-icons";
 
@@ -103,4 +104,4 @@ const ProgressBar = ({ status }) => {
   );
 };
 
-export default ProgressBar;
+export default memo(ProgressBar);
