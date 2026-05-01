@@ -20,7 +20,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://gigworkerproject.azurewebsites.net'
+    'https://gigworkerproject.azurewebsites.net',
+    'https://gig-work.me',
+    'https://www.gig-work.me',
 ]
 
 STORAGES = {
@@ -45,3 +47,7 @@ DATABASES = {
 }
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# production.py or deployment.py
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+SECURE_SSL_REDIRECT = True
