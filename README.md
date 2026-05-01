@@ -1,71 +1,169 @@
-# Gig Platform (Backend + Frontend)
+# Gig Platform Backend
+A Django-based backend for the gig worker platform, providing authentication, accounts, services, and ratings APIs.
 
-A concise guide to this repository: a Django backend and a Vite + React frontend.
+## Table of Contents
 
-## Project overview
+- [Setup](#setup)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [API Integration](#api-integration)
+- [Testing Checklist](#testing-checklist)
 
-- `gig_platform_backend/`: Django backend (APIs, models, serializersm, migrations, admin).
-- `gig_platfrom_frontend/`: Vite + React frontend (UI, components, API client).
+## Setup
 
-## Repo structure (top-level)
+### Prerequisites
 
-- `gig_platform_backend/`
-  - `manage.py` — Django management entrypoint
-  - `requirements.txt` — Python dependencies
-  - `config/` — Django project settings, ASGI/WSGI, urls
-  - `accounts/`, `services/`, `ratings/` — app modules with models, views, serializers
-- `gig_platfrom_frontend/`
-  - `package.json` — frontend dependencies & scripts
-  - `src/` — React app source (components, pages, API helpers)
+- Python 3.10+ and pip
+- A virtual environment tool such as `venv`
+- Node.js 18+ only if you also want to run the frontend locally
 
-## Prerequisites
+### Installation
 
-- Python 3.11 and pip
-- Node 22LTS and npm (or yarn/pnpm)
-- (Optional) PostgreSQL or other DB if you configure production settings
+```powershell
+# Navigate to the backend project directory
+cd gig_platform_backend
 
-## Quickstart — Backend (local development)
+# Create and activate a virtual environment
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 
-1. Open a terminal and navigate to `gig_platform_backend`:
-    `cd gig_platform_backend`
+# Install backend dependencies
+pip install -r requirements.txt
 
-2. Create and activate a virtual environment:
-- Windows:
-    `python -m venv .venv`
-    `.venv\Scripts\activate`  # cmd.exe
+# Run database migrations
+python manage.py migrate
 
-- Mac:
-    `python3 -m venv .venv`
-    `source .venv/bin/activate`
+# Create an admin user
+python manage.py createsuperuser
 
-3. Install Python dependencies:
-    `python -m pip install -r requirements.txt`
+# Start the development server
+python manage.py runserver
+```
 
-4. Configure environment variables (example using `.env` or your shell):
+The backend will be available at `http://127.0.0.1:8000`.
 
-- `DJANGO_SETTINGS_MODULE=config.settings` (the default manage.py should already point to the right settings)
-- `SECRET_KEY`, `DATABASE_URL` see .env.example in backend
+### Environment Variables
 
-5. Apply database migrations and create a superuser:
-    `python manage.py migrate`
-    `python manage.py createsuperuser`
+Use your shell or a `.env` file for any required settings such as:
 
-6. Run the development server:
-    `python manage.py runserver`
-By default Django will serve on `http://127.0.0.1:8000/`.
-## Quickstart — Frontend (local development)
+```env
+SECRET_KEY=your-secret-key
+DEBUG=True
+DATABASE_URL=sqlite:///db.sqlite3
+```
 
-1. Open a terminal and navigate to `gig_platfrom_frontend`:
-    `cd gig_platfrom_frontend`
+## Project Structure
 
-2. Install node dependencies:
-    `npm install`
+```
+gig_platform_backend/
+├── manage.py                  # Django management entrypoint
+├── requirements.txt           # Python dependencies
+├── api.http                   # Example API requests
+├── config/                    # Project settings, URLs, ASGI/WSGI
+├── accounts/                  # Authentication and profile management
+├── services/                  # Service categories, requests, routing
+├── ratings/                   # Reviews, sentiment, rankings
+├── templates/                 # Django templates
+└── static/                    # Static assets
+```
 
-3. Start the dev server (Vite):
-    `npm run dev`
+### Core Apps
 
-The frontend dev server typically runs at `http://localhost:5173/` — it will proxy or call the backend API at the configured API base URL in `src/api`.
-see `src/api/axios.js` :to use the actual backend url 
+- `accounts/`: user accounts, profiles, worker verification, permissions
+- `services/`: service requests, categories, worker dispatch flows
+- `ratings/`: reviews, sentiment analysis, and recommendation scores
+
+## Features
+
+### Authentication
+
+- User registration and login support
+- Token-based authentication
+- Profile and worker profile management
+
+### Service Management
+
+- Service category management
+- Customer request creation and tracking
+- Worker availability and request handling
+
+### Ratings and Recommendations
+
+- Worker reviews and ratings
+- Sentiment metadata for reviews
+- Recommendation and ranking support
+
+### Admin Operations
+
+- Worker verification workflow
+- Admin access to accounts and service data
+- Django admin customization
+
+## API Integration
+
+### Base URL
+
+```text
+http://127.0.0.1:8000
+```
+
+### Common Endpoints
+
+#### Accounts
+
+- `POST /accounts/register/` - Register a new user
+- `GET /accounts/me/` - Get the current user
+- `GET, PATCH /accounts/profile/` - Manage customer profile
+- `POST /accounts/become-worker/` - Register as a worker
+- `GET, PATCH /accounts/worker/profile/` - Manage worker profile
+
+#### Services
+
+- `GET /services/categories/` - List service categories
+- `GET /services/recommended-workers/` - Search recommended workers
+- `GET, POST /services/requests/` - Manage service requests
+- `GET /services/worker/inbox/` - Worker inbox
+
+#### Ratings
+
+- `GET, POST /ratings/reviews/` - List or create reviews
+- `GET /ratings/sentiments/` - Review sentiment data
+- `GET /ratings/leaderboard/` - Worker leaderboard
+
+## Testing Checklist
+
+### Backend Flow
+
+1. **Run the server**
+   - [ ] Activate the virtual environment
+   - [ ] Install dependencies
+   - [ ] Run `python manage.py migrate`
+   - [ ] Start the server with `python manage.py runserver`
+
+2. **Register and authenticate**
+   - [ ] Register a new user through the API
+   - [ ] Confirm token login works
+   - [ ] Verify `/accounts/me/` returns the authenticated user
+
+3. **Manage profiles**
+   - [ ] Update customer profile fields
+   - [ ] Register a worker profile
+   - [ ] Upload or verify worker documents if enabled
+
+4. **Create service requests**
+   - [ ] Create a new request
+   - [ ] Confirm it appears in the request list
+   - [ ] Update worker status through the service endpoints
+
+5. **Review and ratings**
+   - [ ] Submit a worker review
+   - [ ] Confirm sentiment and leaderboard endpoints respond correctly
+
+### API Smoke Test
+
+- [ ] Open `api.http`
+- [ ] Send a request to a health or auth endpoint
+- [ ] Confirm the response matches the expected schema
 
 # Gig Worker Platform Frontend
 A React-based frontend for the gig worker platform, built with Vite, Tailwind CSS, and React Router.
