@@ -25,7 +25,6 @@ packaging==26.0
 pathspec==1.0.4
 pillow==11.3.0
 platformdirs==4.4.0
-psycopg2==2.9.12
 psycopg2-binary==2.9.11
 PyJWT==2.11.0
 python-dotenv==1.2.1
