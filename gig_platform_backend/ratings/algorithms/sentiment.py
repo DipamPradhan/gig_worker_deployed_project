@@ -1,104 +1,69 @@
+# from decimal import Decimal
+
+# from .predictor import predict_sentiment
+
+
+# def analyze_review_sentiment(text):
+#     text = (text or "").strip()
+#     if not text:
+#         return "NEUTRAL", Decimal("0.0000"), Decimal("0.5000"), {
+#             "model_prediction": "Neutral",
+#             "model_probability": 0.5,
+#             "signed_score": 0.0,
+#         }
+
+#     model_label, probability = predict_sentiment(text)
+#     positive_probability = float(probability)
+#     signed_score = max(min((positive_probability * 2.0) - 1.0, 1.0), -1.0)
+#     compound = Decimal(str(round(signed_score, 4)))
+
+#     if compound >= Decimal("0.12"):
+#         label = "POSITIVE"
+#     elif compound <= Decimal("-0.12"):
+#         label = "NEGATIVE"
+#     else:
+#         label = "NEUTRAL"
+
+#     confidence_raw = 0.5 + abs(positive_probability - 0.5)
+#     confidence = Decimal(str(round(confidence_raw, 4)))
+
+#     return label, compound, confidence, {
+#         "model_prediction": model_label,
+#         "model_probability": round(positive_probability, 4),
+#         "signed_score": round(signed_score, 4),
+#     }
 from decimal import Decimal
-import re
 
-
-POSITIVE_WORDS = {
-    "good",
-    "great",
-    "excellent",
-    "amazing",
-    "professional",
-    "fast",
-    "clean",
-    "polite",
-    "friendly",
-    "reliable",
-    "perfect",
-    "awesome",
-    "helpful",
-    "efficient",
-    "skilled",
-    "recommend",
-    "satisfied",
-    "best",
-}
-
-NEGATIVE_WORDS = {
-    "bad",
-    "worst",
-    "poor",
-    "late",
-    "slow",
-    "rude",
-    "dirty",
-    "unprofessional",
-    "expensive",
-    "broken",
-    "terrible",
-    "awful",
-    "incomplete",
-    "careless",
-    "disappointed",
-    "fraud",
-    "scam",
-    "waste",
-}
-
-INTENSIFIERS = {"very", "extremely", "highly", "really", "too", "super"}
-NEGATIONS = {"not", "never", "no", "none", "hardly", "barely"}
-
-
-def _tokenize(text):
-    return re.findall(r"[a-zA-Z']+", text.lower())
+from .predictor import predict_sentiment
 
 
 def analyze_review_sentiment(text):
     text = (text or "").strip()
+
     if not text:
-        return "NEUTRAL", Decimal("0.0000"), Decimal("0.5000")
+        return "NEUTRAL", Decimal("0.5000"), Decimal("0.5000"), {
+            "model_prediction": "Neutral",
+            "model_probability": 0.5,
+        }
 
-    tokens = _tokenize(text)
-    if not tokens:
-        return "NEUTRAL", Decimal("0.0000"), Decimal("0.5000")
+    model_label, probability = predict_sentiment(text)
 
-    score = 0.0
-    matched = 0
-    for idx, token in enumerate(tokens):
-        base = 0.0
-        if token in POSITIVE_WORDS:
-            base = 1.0
-        elif token in NEGATIVE_WORDS:
-            base = -1.0
-        else:
-            continue
+    probability = float(probability)
 
-        matched += 1
-        prev = tokens[idx - 1] if idx > 0 else ""
-        prev2 = tokens[idx - 2] if idx > 1 else ""
-
-        if prev in INTENSIFIERS or prev2 in INTENSIFIERS:
-            base *= 1.5
-        if prev in NEGATIONS or prev2 in NEGATIONS:
-            base *= -1.0
-
-        score += base
-
-    if matched == 0:
-        return "NEUTRAL", Decimal("0.0000"), Decimal("0.5000")
-
-    normalized = score / max(matched * 1.5, 1)
-    normalized = max(min(normalized, 1.0), -1.0)
-    compound = Decimal(str(round(normalized, 4)))
-
-    if compound >= Decimal("0.12"):
+    if probability >= 0.56:
         label = "POSITIVE"
-    elif compound <= Decimal("-0.12"):
+    elif probability <= 0.44:
         label = "NEGATIVE"
     else:
         label = "NEUTRAL"
 
-    lexical_coverage = matched / max(len(tokens), 1)
-    confidence_raw = min(1.0, abs(float(compound)) + lexical_coverage)
-    confidence = Decimal(str(round(max(confidence_raw, 0.45), 4)))
+    confidence = Decimal(
+        str(round(max(probability, 1 - probability), 4))
+    )
 
-    return label, compound, confidence
+    sentiment_score = Decimal(str(round(probability, 4)))
+
+    return label, sentiment_score, confidence, {
+        "model_prediction": model_label,
+        "model_probability": round(probability, 4),
+    }

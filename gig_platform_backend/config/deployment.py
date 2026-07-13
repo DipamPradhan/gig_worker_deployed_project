@@ -2,8 +2,8 @@ import os
 from .settings import *
 from .settings import BASE_DIR
 
-ALLOWED_HOSTS = ["api.gig-work.me"]
-CSRF_TRUSTED_ORIGINS = ["https://gig-work.me","www.gig-work.me"]
+ALLOWED_HOSTS = ["api.gig-work.me","*"]
+CSRF_TRUSTED_ORIGINS = ["https://gig-work.me","www.gig-work.me","http://192.168.56.1:5173","http://192.168.101:5173"]
 DEBUG = False
 SECRET_KEY = "k$$_uqx9+1diy)%ar*g13ph90*@!dr33_*g8urvhp1sgy21de"
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -27,6 +27,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.gig-work.me',
     'https://www.api.gig-work.me',
     'https:/api.gig-work.me',
+    'http://192.168.56.1:5173/',
+    'http://192.168.101:5173/',
 ]
 
 STORAGES = {

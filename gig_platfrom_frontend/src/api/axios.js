@@ -2,7 +2,8 @@ import axios from "axios";
 
 const isDevelopment = import.meta.env.MODE === "development";
 // const API_BASE_URL = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
-const API_BASE_URL = 'https://api.gig-work.me/';
+// const API_BASE_URL = "http://127.0.0.1:8000/";
+const API_BASE_URL = "http://192.168.1.101:8000/";
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {

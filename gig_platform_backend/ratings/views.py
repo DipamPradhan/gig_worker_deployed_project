@@ -12,7 +12,7 @@ from services.algorithms.ranking import bayesian_rating, recommendation_score
 
 from .algorithms.sentiment import analyze_review_sentiment
 from .models import WorkerReview, ReviewSentiment, WorkerRecommendationScore
-from .serializers import (
+from .serializers import (	
 	WorkerReviewSerializer,
 	ReviewSentimentSerializer,
 )
@@ -121,14 +121,14 @@ class WorkerReviewListCreateView(generics.ListCreateAPIView):
 		)
 		response_status = status.HTTP_201_CREATED
 
-		label, compound, confidence = analyze_review_sentiment(review.review_text)
+		label, compound, confidence, metadata = analyze_review_sentiment(review.review_text)
 		ReviewSentiment.objects.update_or_create(
 			review=review,
 			defaults={
 				"label": label,
 				"compound_score": compound,
 				"confidence": confidence,
-				"metadata": {},
+				"metadata": metadata,
 			},
 		)
 		_refresh_worker_recommendation_score(service_request.assigned_worker)

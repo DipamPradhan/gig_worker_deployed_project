@@ -12,11 +12,26 @@ def bayesian_rating(raw_average, review_count, global_mean=3.5, confidence=10):
     )
 
 
-def recommendation_score(distance_km, bayesian_rate, sentiment_adj=0, max_radius=20):
-    """Distance-prioritized blended score in [0, 1]."""
-    max_radius = max(float(max_radius), 0.1)    
-    distance_part = max(0.0, 1.0 - (float(distance_km) / max_radius))
-    rating_part = min(max(float(bayesian_rate) / 5.0, 0.0), 1.0)
-    sentiment_part = min(max((float(sentiment_adj) + 1.0) / 2.0, 0.0), 1.0)
+# def recommendation_score(distance_km, bayesian_rate, sentiment_adj=0, max_radius=20):
+#     """Distance-prioritized blended score in [0, 1]."""
+#     max_radius = max(float(max_radius), 0.1)    
+#     distance_part = max(0.0, 1.0 - (float(distance_km) / max_radius))
+#     rating_part = min(max(float(bayesian_rate) / 5.0, 0.0), 1.0)
+#     sentiment_part = min(max((float(sentiment_adj) + 1.0) / 2.0, 0.0), 1.0)
 
-    return (0.55 * distance_part) + (0.35 * rating_part) + (0.10 * sentiment_part)
+#     return (0.35 * distance_part) + (0.25 * rating_part) + (0.40 * sentiment_part)
+
+def recommendation_score(distance_km,
+                         bayesian_rate,
+                         sentiment_adj=0.5,
+                         max_radius=20):
+
+    distance_part = max(0.0, 1 - float(distance_km) / float(max_radius))
+    rating_part = float(bayesian_rate) / 5
+    sentiment_part = float(sentiment_adj)
+
+    return (
+        0.35 * distance_part +
+        0.25 * rating_part +
+        0.40 * sentiment_part
+    )
