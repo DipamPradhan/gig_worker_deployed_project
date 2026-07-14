@@ -36,6 +36,10 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://192.168.56.1:5173",
     "http://192.168.101:5173",
+    'https://gig-work.me',
+    'https://www.gig-work.me',
+    'https://www.api.gig-work.me',
+    'https://api.gig-work.me',
 ]
 
 
