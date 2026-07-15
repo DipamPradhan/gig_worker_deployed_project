@@ -117,12 +117,10 @@ const MyRequests = () => {
         cancelText="Not yet"
         variant="success"
         onConfirm={() => confirmCompletion(pendingCompletionRequest.id)}
-        onCancel={() =>
-          {
-            dismissedCompletionRequestIdRef.current = pendingCompletionRequest.id;
-            setPendingCompletionRequest(null);
-          }
-        }
+        onCancel={() => {
+          dismissedCompletionRequestIdRef.current = pendingCompletionRequest.id;
+          setPendingCompletionRequest(null);
+        }}
       />
 
       {requests.length === 0 ? (
