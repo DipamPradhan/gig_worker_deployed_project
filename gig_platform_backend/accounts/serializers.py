@@ -1,7 +1,20 @@
+import json
+from functools import lru_cache
+from pathlib import Path
+
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from services.models import ServiceCategory
 from .models import CustomUser, UserProfile, WorkerDocument, WorkerProfile
+
+
+DOCUMENT_REFERENCE_FILE = Path(__file__).resolve().parent / "data" / "worker_document_numbers.json"
+
+
+@lru_cache(maxsize=1)
+def get_document_reference_numbers():
+    with DOCUMENT_REFERENCE_FILE.open("r", encoding="utf-8") as reference_file:
+        return json.load(reference_file)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -171,6 +184,25 @@ class WorkerDocumentSerializer(serializers.ModelSerializer):
     def get_worker_name(self, obj):
         return obj.worker_profile.worker.get_full_name()
 
+    def validate(self, attrs):
+        document_type = attrs.get("document_type")
+        document_number = (attrs.get("document_number") or "").strip()
+
+        reference_numbers = get_document_reference_numbers()
+        valid_numbers = reference_numbers.get(document_type, [])
+
+        if document_number not in valid_numbers:
+            raise serializers.ValidationError(
+                {
+                    "document_number": (
+                        "The document number does not match the factual data for the selected document type."
+                    )
+                }
+            )
+
+        attrs["document_number"] = document_number
+        return attrs
+
     def create(self, validated_data):
         user = self.context["request"].user
 
@@ -179,6 +211,11 @@ class WorkerDocumentSerializer(serializers.ModelSerializer):
 
         if user.user_type != CustomUser.Choice.WORKER:
             raise serializers.ValidationError("Only workers can upload documents.")
+
+        if user.worker_profile.documents.exists():
+            raise serializers.ValidationError(
+                "Remove your existing document before uploading another."
+            )
 
         return WorkerDocument.objects.create(
             worker_profile=user.worker_profile, **validated_data

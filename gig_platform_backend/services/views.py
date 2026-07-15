@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 from accounts.permissions import IsWorkerUserType
 from accounts.models import WorkerProfile
+from ratings.models import WorkerReview
 from ratings.models import WorkerRecommendationScore
 from services.algorithms.distance import haversine_km
 from services.algorithms.ranking import bayesian_rating, recommendation_score
@@ -42,6 +43,12 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 		return []
 
 	radius = float(max_radius_km or user_profile.preferred_radius_km)
+	reviewed_worker_ids = set(
+		WorkerReview.objects.filter(
+			reviewer=user,
+			moderation_status=WorkerReview.ModerationStatus.APPROVED,
+		).values_list("worker_id", flat=True)
+	)
 	workers = WorkerProfile.objects.filter(
 		verification_status=WorkerProfile.VERIFICATION_STATUS.VERIFIED,
 		availability_status=WorkerProfile.AVAILABILITY_STATUS.ACTIVE,
@@ -100,6 +107,7 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 		result.append(
 			{
 				"worker": worker,
+				"hired_before": worker.id in reviewed_worker_ids,
 				"user_latitude": user_latitude,
 				"user_longitude": user_longitude,
 				"worker_latitude": float(worker.service_latitude),
@@ -124,6 +132,19 @@ def _set_worker_availability(worker_profile, availability_status):
 	return True
 
 
+def _get_pending_review_request_for_user(user):
+	return (
+		ServiceRequest.objects.filter(
+			requester=user,
+			status=ServiceRequest.Status.COMPLETED,
+		)
+		.select_related("worker_review", "assigned_worker", "assigned_worker__worker")
+		.order_by("-updated_at", "-closed_at", "-created_at")
+		.filter(worker_review__isnull=True)
+		.first()
+	)
+
+
 class ServiceCategoryListView(generics.ListAPIView):
 	permission_classes = [IsAuthenticated]
 	serializer_class = ServiceCategorySerializer
@@ -141,6 +162,17 @@ class ServiceRequestListCreateView(generics.ListCreateAPIView):
 		)
 
 	def perform_create(self, serializer):
+		pending_review_request = _get_pending_review_request_for_user(self.request.user)
+		if pending_review_request:
+			raise ValidationError(
+				{
+					"detail": (
+						"Please submit a review for your previous completed request before hiring another worker."
+					),
+					"review_request_id": str(pending_review_request.id),
+				}
+			)
+
 		preferred_worker_profile = serializer.validated_data.get("preferred_worker_profile")
 		if not preferred_worker_profile:
 			raise ValidationError({"preferred_worker_id": "Please select a worker to send this request."})
@@ -177,6 +209,7 @@ class RecommendedWorkerSearchView(generics.GenericAPIView):
 				"worker_name": item["worker"].worker.get_full_name(),
 				"phone_number": item["worker"].worker.phone_number,
 				"username": item["worker"].worker.username,
+				"hired_before": item["hired_before"],
 				"service_category": item["worker"].service_category,
 				"skills": item["worker"].skills,
 				"bio": item["worker"].bio,
@@ -307,6 +340,7 @@ class WorkerAssignedRequestListView(generics.ListAPIView):
 				ServiceRequest.Status.ASSIGNED,
 				ServiceRequest.Status.ARRIVING,
 				ServiceRequest.Status.IN_PROGRESS,
+				ServiceRequest.Status.COMPLETION_PENDING,
 				ServiceRequest.Status.COMPLETED,
 				ServiceRequest.Status.CANCELLED,
 			],
@@ -383,7 +417,8 @@ class ServiceRequestWorkerStatusUpdateView(generics.GenericAPIView):
 		allowed = {
 			ServiceRequest.Status.ASSIGNED: [ServiceRequest.Status.ARRIVING, ServiceRequest.Status.CANCELLED],
 			ServiceRequest.Status.ARRIVING: [ServiceRequest.Status.IN_PROGRESS, ServiceRequest.Status.CANCELLED],
-			ServiceRequest.Status.IN_PROGRESS: [ServiceRequest.Status.COMPLETED, ServiceRequest.Status.CANCELLED],
+			ServiceRequest.Status.IN_PROGRESS: [ServiceRequest.Status.COMPLETION_PENDING, ServiceRequest.Status.CANCELLED],
+			ServiceRequest.Status.COMPLETION_PENDING: [],
 		}
 		if new_status not in allowed.get(service_request.status, []):
 			return Response(
@@ -398,13 +433,13 @@ class ServiceRequestWorkerStatusUpdateView(generics.GenericAPIView):
 			service_request.expected_start_at = timezone.now()
 			update_fields.append("expected_start_at")
 
-		if new_status in [ServiceRequest.Status.COMPLETED, ServiceRequest.Status.CANCELLED]:
+		if new_status == ServiceRequest.Status.CANCELLED:
 			service_request.closed_at = timezone.now()
 			update_fields.append("closed_at")
 
 		service_request.save(update_fields=update_fields)
 
-		if new_status in [ServiceRequest.Status.COMPLETED, ServiceRequest.Status.CANCELLED]:
+		if new_status == ServiceRequest.Status.CANCELLED:
 			_set_worker_availability(
 				request.user.worker_profile,
 				WorkerProfile.AVAILABILITY_STATUS.ACTIVE,
@@ -413,6 +448,7 @@ class ServiceRequestWorkerStatusUpdateView(generics.GenericAPIView):
 		event_type_map = {
 			ServiceRequest.Status.ARRIVING: ServiceRequestEvent.EventType.ARRIVING,
 			ServiceRequest.Status.IN_PROGRESS: ServiceRequestEvent.EventType.STARTED,
+			ServiceRequest.Status.COMPLETION_PENDING: ServiceRequestEvent.EventType.COMPLETION_PENDING,
 			ServiceRequest.Status.COMPLETED: ServiceRequestEvent.EventType.COMPLETED,
 			ServiceRequest.Status.CANCELLED: ServiceRequestEvent.EventType.CANCELLED,
 		}
@@ -421,6 +457,43 @@ class ServiceRequestWorkerStatusUpdateView(generics.GenericAPIView):
 			event_type=event_type_map[new_status],
 			actor=request.user,
 			detail=detail,
+		)
+
+		return Response(ServiceRequestSerializer(service_request).data, status=status.HTTP_200_OK)
+
+
+class ServiceRequestCustomerConfirmCompletionView(generics.GenericAPIView):
+	permission_classes = [IsAuthenticated]
+	serializer_class = ServiceRequestSerializer
+
+	@transaction.atomic
+	def post(self, request, *args, **kwargs):
+		service_request = get_object_or_404(
+			ServiceRequest.objects.select_for_update(),
+			id=self.kwargs["request_id"],
+			requester=request.user,
+		)
+
+		if service_request.status != ServiceRequest.Status.COMPLETION_PENDING:
+			return Response(
+				{"detail": "This request is not waiting for completion confirmation."},
+				status=status.HTTP_400_BAD_REQUEST,
+			)
+
+		service_request.status = ServiceRequest.Status.COMPLETED
+		service_request.closed_at = timezone.now()
+		service_request.save(update_fields=["status", "closed_at", "updated_at"])
+
+		_set_worker_availability(
+			service_request.assigned_worker,
+			WorkerProfile.AVAILABILITY_STATUS.ACTIVE,
+		)
+
+		ServiceRequestEvent.objects.create(
+			request=service_request,
+			event_type=ServiceRequestEvent.EventType.COMPLETED,
+			actor=request.user,
+			detail="Customer confirmed the work was completed.",
 		)
 
 		return Response(ServiceRequestSerializer(service_request).data, status=status.HTTP_200_OK)

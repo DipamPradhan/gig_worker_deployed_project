@@ -1,20 +1,22 @@
-
 import { memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChalkboard, faMotorcycle, faUserGear, faGears, faCheckDouble} from "@fortawesome/free-solid-svg-icons";
-
+import {
+  faChalkboard,
+  faMotorcycle,
+  faUserGear,
+  faGears,
+  faCheckDouble,
+  faClock,
+} from "@fortawesome/free-solid-svg-icons";
 
 const STATUS_STEPS = [
   { key: "pending", label: "Requested", icon: faChalkboard },
   { key: "assigned", label: "Assigned", icon: faUserGear },
   { key: "arriving", label: "Arriving", icon: faMotorcycle },
   { key: "in_progress", label: "In Progress", icon: faGears },
-  { key: "completed", label: "Completed", icon: faCheckDouble }
+  { key: "completion_pending", label: "Awaiting Confirmation", icon: faClock },
+  { key: "completed", label: "Completed", icon: faCheckDouble },
 ];
-
-
-
-
 
 const normalizeStatus = (status) => {
   const value = status?.toString()?.trim().toLowerCase() || "";
@@ -25,6 +27,10 @@ const normalizeStatus = (status) => {
 
   if (value === "in progress") {
     return "in_progress";
+  }
+
+  if (value === "completion_pending") {
+    return "completion_pending";
   }
 
   if (value === "cancelled") {
@@ -44,9 +50,6 @@ const ProgressBar = ({ status }) => {
     return null;
   }
 
-  
-
-
   const currentStep = STATUS_STEPS.findIndex((s) => s.key === normalized);
   if (currentStep === -1) return null;
 
@@ -55,10 +58,8 @@ const ProgressBar = ({ status }) => {
 
   return (
     <div className="w-full px-6 py-10">
-
       {/*  TRACK WRAPPER */}
       <div className="relative flex justify-between items-center">
-
         {/*  BASE LINE (from first to last circle center) */}
         <div className="absolute top-6 left-6 right-6 h-1 bg-gray-300 rounded" />
 
@@ -91,7 +92,11 @@ const ProgressBar = ({ status }) => {
                   ${!isCompleted && !isActive ? "bg-gray-300" : ""}
                 `}
               >
-                {isCompleted ? <FontAwesomeIcon icon={step.icon}/> : <FontAwesomeIcon icon={step.icon}/>}
+                {isCompleted ? (
+                  <FontAwesomeIcon icon={step.icon} />
+                ) : (
+                  <FontAwesomeIcon icon={step.icon} />
+                )}
               </div>
 
               {/* LABEL */}

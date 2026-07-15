@@ -78,6 +78,7 @@ const SearchWorkers = () => {
   const { loading, error, execute, clearError } = useApi();
   const [categories, setCategories] = useState([]);
   const [workers, setWorkers] = useState([]);
+  const [pendingReviewRequest, setPendingReviewRequest] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [radius, setRadius] = useState(initialRadius);
   const [searched, setSearched] = useState(shouldRestoreSearch);
@@ -85,6 +86,7 @@ const SearchWorkers = () => {
 
   useEffect(() => {
     fetchCategories();
+    fetchPendingReviewRequest();
   }, []);
 
   const fetchCategories = async () => {
@@ -96,8 +98,26 @@ const SearchWorkers = () => {
     }
   };
 
+  const fetchPendingReviewRequest = async () => {
+    try {
+      const data = await execute(() => servicesService.getRequests());
+      const requests = Array.isArray(data) ? data : data.results || [];
+      const pending = requests.find((request) => {
+        const status = String(request.status).toUpperCase();
+        return (
+          status === "COMPLETION_PENDING" ||
+          (status === "COMPLETED" && !request.has_review)
+        );
+      });
+      setPendingReviewRequest(pending || null);
+    } catch (err) {
+      // Error handled by useApi
+    }
+  };
+
   const searchWorkers = async (category, radiusValue, shouldPersist = true) => {
     if (!category) return;
+    if (requestLocked) return;
 
     setSearched(true);
     if (shouldPersist) {
@@ -119,7 +139,11 @@ const SearchWorkers = () => {
   };
 
   useEffect(() => {
-    if (!shouldRestoreSearch || hasRestoredSearch.current || !selectedCategory) {
+    if (
+      !shouldRestoreSearch ||
+      hasRestoredSearch.current ||
+      !selectedCategory
+    ) {
       return;
     }
 
@@ -162,6 +186,8 @@ const SearchWorkers = () => {
       ).workerId
     : null;
 
+  const requestLocked = Boolean(pendingReviewRequest);
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Find Workers</h1>
@@ -194,16 +220,42 @@ const SearchWorkers = () => {
             onClick={() => searchWorkers(selectedCategory, radius)}
             variant="primary"
             size="lg"
-            disabled={!selectedCategory || loading}
+            disabled={!selectedCategory || loading || requestLocked}
             loading={loading}
           >
             Search Workers
           </Button>
-         
         </div>
       </Card>
 
       <ErrorAlert message={error} onClose={clearError} />
+
+      {requestLocked && (
+        <div className="mb-6 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800 flex items-center justify-between gap-4">
+          <p>
+            {String(pendingReviewRequest?.status).toUpperCase() ===
+            "COMPLETION_PENDING"
+              ? "You must confirm your previously completed work before hiring another worker."
+              : "You must submit a review for your previous completed work before hiring another worker."}
+          </p>
+          {pendingReviewRequest?.id && (
+            <Link
+              to={
+                String(pendingReviewRequest?.status).toUpperCase() ===
+                "COMPLETION_PENDING"
+                  ? "/customer/my-requests"
+                  : `/customer/submit-review?request=${pendingReviewRequest.id}`
+              }
+              className="inline-flex items-center rounded-md bg-orange-600 px-3 py-2 text-white font-medium hover:bg-orange-700"
+            >
+              {String(pendingReviewRequest?.status).toUpperCase() ===
+              "COMPLETION_PENDING"
+                ? "Go to My Requests"
+                : "Review now"}
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* Results */}
       {loading && searched ? (
@@ -212,7 +264,6 @@ const SearchWorkers = () => {
         <EmptyState
           title="No workers found"
           message="No workers found matching your criteria. Try adjusting your search."
-          icon="👷"
         />
       ) : workers.length > 0 ? (
         <>
@@ -226,79 +277,85 @@ const SearchWorkers = () => {
               if (worker.worker_id === bestReviewWorkerId) {
                 badges.push("Best Review");
               }
+              if (worker.hired_before) badges.push("Hired Before");
 
               return (
-              <Card
-                key={worker.worker_id}
-                className={`border ${rankTheme.card} hover:shadow-md transition-shadow cursor-pointer`}
-                onClick={() => setSelectedWorker(worker)}
-              >
-                <div className="flex flex-col gap-4 md:grid md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center md:gap-6">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${rankTheme.badge}`}
-                    >
-                      #{rank}
+                <Card
+                  key={worker.worker_id}
+                  className={`border ${rankTheme.card} hover:shadow-md transition-shadow cursor-pointer`}
+                  onClick={() => setSelectedWorker(worker)}
+                >
+                  <div className="flex flex-col gap-4 md:grid md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center md:gap-6">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${rankTheme.badge}`}
+                      >
+                        #{rank}
+                      </div>
+                      <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">👤</span>
+                      </div>
+                      <div>
+                        {badges.length > 0 ? (
+                          <div className="flex flex-wrap gap-2 mb-1">
+                            {badges.map((badge) => (
+                              <span
+                                key={`${worker.worker_id}-${badge}`}
+                                className="text-xs uppercase tracking-wide text-purple-950 bg-purple-200 px-2 py-0.5 rounded"
+                              >
+                                {badge}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {worker.worker_name || "Worker"}
+                        </h3>
+                        <p className="text-sm text-amber-600 font-medium">
+                          Rating: {formatBayesianRating(worker.bayesian_rating)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {worker.service_category || selectedCategory}
+                        </p>
+                      </div>
                     </div>
-                    <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center">
-                      <span className="text-2xl">👤</span>
-                    </div>
-                    <div>
-                      {badges.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 mb-1">
-                          {badges.map((badge) => (
-                            <span
-                              key={`${worker.worker_id}-${badge}`}
-                              className="text-xs uppercase tracking-wide text-purple-950 bg-purple-200 px-2 py-0.5 rounded"
-                            >
-                              {badge}
-                            </span>
-                          ))}
-                        </div>
-                      ) : null}
-                      <h3 className="font-semibold text-gray-900 text-lg">
-                        {worker.worker_name || "Worker"}
-                      </h3>
-                      <p className="text-sm text-amber-600 font-medium">
-                        Rating: {formatBayesianRating(worker.bayesian_rating)}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {worker.service_category || selectedCategory}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="w-[220px] text-sm text-gray-700 text-right justify-self-end">
-                    <p>
-                      {worker.distance_km !== undefined
-                        ? `${Number(worker.distance_km).toFixed(1)} km away`
-                        : "Distance: N/A"}
-                    </p>
-                    <p className="font-medium text-gray-900">
-                      Ranking score: {formatRankingPercent(worker.final_score)}
-                    </p>
-                  </div>
+                    <div className="w-[220px] text-sm text-gray-700 text-right justify-self-end">
+                      <p>
+                        {worker.distance_km !== undefined
+                          ? `${Number(worker.distance_km).toFixed(1)} km away`
+                          : "Distance: N/A"}
+                      </p>
+                      <p className="font-medium text-gray-900">
+                        Ranking score:{" "}
+                        {formatRankingPercent(worker.final_score)}
+                      </p>
+                    </div>
 
-                  <div className="flex space-x-2 justify-self-end">
-                    <Link
-                      to={`/customer/create-request?worker=${worker.worker_id}&category=${selectedCategory}`}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Button variant="primary" size="sm">
-                        Request Service
-                      </Button>
-                    </Link>
-                    <Link
-                      to={`/customer/reviews?worker=${worker.worker_id}`}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Button variant="outline" size="sm">
-                        View Reviews
-                      </Button>
-                    </Link>
+                    <div className="flex space-x-2 justify-self-end">
+                      <Link
+                        to={`/customer/create-request?worker=${worker.worker_id}&category=${selectedCategory}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          disabled={requestLocked}
+                        >
+                          Request Service
+                        </Button>
+                      </Link>
+                      <Link
+                        to={`/customer/reviews?worker=${worker.worker_id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button variant="outline" size="sm">
+                          View Reviews
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
               );
             })}
           </div>
@@ -392,7 +449,11 @@ const SearchWorkers = () => {
                     <Link
                       to={`/customer/create-request?worker=${selectedWorker.worker_id}&category=${selectedCategory}`}
                     >
-                      <Button variant="primary" size="sm">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        disabled={requestLocked}
+                      >
                         Request Service
                       </Button>
                     </Link>
@@ -405,7 +466,9 @@ const SearchWorkers = () => {
       ) : (
         <Card>
           <div className="text-center py-8">
-            <div className="text-4xl mb-4"><FontAwesomeIcon icon={faMagnifyingGlass}></FontAwesomeIcon></div>
+            <div className="text-4xl mb-4">
+              <FontAwesomeIcon icon={faMagnifyingGlass}></FontAwesomeIcon>
+            </div>
             <p className="text-gray-600">
               Select a category and search radius to find available workers
             </p>

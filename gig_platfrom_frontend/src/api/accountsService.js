@@ -63,6 +63,14 @@ const accountsService = {
     return response.data;
   },
 
+  // DELETE /accounts/worker/documents/:id/
+  deleteWorkerDocument: async (documentId) => {
+    const response = await api.delete(
+      `/accounts/worker/documents/${documentId}/`,
+    );
+    return response.data;
+  },
+
   // PATCH /accounts/worker/availability/
   updateAvailability: async (availabilityStatus) => {
     const response = await api.patch("/accounts/worker/availability/", {

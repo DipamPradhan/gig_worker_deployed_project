@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ratingsService } from "../../api";
 import { useApi } from "../../hooks";
+import { useAuth } from "../../context";
 import {
   Card,
   Button,
@@ -15,6 +16,7 @@ const WorkerReviews = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const workerId = searchParams.get("worker");
+  const { user } = useAuth();
 
   const { loading, error, execute, clearError } = useApi();
   const [reviews, setReviews] = useState([]);
@@ -60,6 +62,23 @@ const WorkerReviews = () => {
     reviews.length > 0
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0;
+
+  const isCurrentUserReview = (review) => {
+    const reviewerId = review.reviewer_details?.id || review.reviewer?.id;
+    return Boolean(
+      user?.id && reviewerId && String(user.id) === String(reviewerId),
+    );
+  };
+
+  const getReviewerLabel = (review) => {
+    const baseName =
+      review.reviewer_display_name ||
+      review.reviewer_details?.first_name ||
+      review.reviewer?.first_name ||
+      "Customer";
+
+    return baseName;
+  };
 
   return (
     <div>
@@ -124,12 +143,12 @@ const WorkerReviews = () => {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-medium text-gray-900">
-                      {review.reviewer_display_name ||
-                        review.reviewer_details?.first_name ||
-                        review.reviewer?.first_name ||
-                        "Customer"}
+                    <span className={`font-medium ${"text-gray-900"}`}>
+                      {getReviewerLabel(review)}
                     </span>
+                    {isCurrentUserReview(review) && (
+                      <span className="font-medium text-red-600">(me)</span>
+                    )}
                     <StarRating rating={review.rating} readonly size="sm" />
                   </div>
                   <p className="text-sm text-gray-500">

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils import timezone
 from .models import (
     CustomUser,
     UserProfile,
@@ -85,6 +86,20 @@ class WorkerProfileAdmin(admin.ModelAdmin):
             "accounts.change_workerprofile"
         )
 
+    def save_model(self, request, obj, form, change):
+        if obj.verification_status == WorkerProfile.VERIFICATION_STATUS.VERIFIED:
+            original_status = None
+            if change and obj.pk:
+                original_status = (
+                    WorkerProfile.objects.filter(pk=obj.pk)
+                    .values_list("verification_status", flat=True)
+                    .first()
+                )
+            if original_status != WorkerProfile.VERIFICATION_STATUS.VERIFIED or not obj.verified_by_id:
+                obj.verified_by = request.user
+                obj.verified_at = timezone.now()
+        super().save_model(request, obj, form, change)
+
 
 admin.site.register(WorkerProfile, WorkerProfileAdmin)
 
@@ -130,6 +145,20 @@ class WorkerDocumentAdmin(admin.ModelAdmin):
         return request.user.has_perm("accounts.view_workerdocument") or request.user.has_perm(
             "accounts.change_workerdocument"
         )
+
+    def save_model(self, request, obj, form, change):
+        if obj.verification_status == WorkerDocument.VERIFICATION_STATUS.VERIFIED:
+            original_status = None
+            if change and obj.pk:
+                original_status = (
+                    WorkerDocument.objects.filter(pk=obj.pk)
+                    .values_list("verification_status", flat=True)
+                    .first()
+                )
+            if original_status != WorkerDocument.VERIFICATION_STATUS.VERIFIED or not obj.verified_by_id:
+                obj.verified_by = request.user
+                obj.verified_at = timezone.now()
+        super().save_model(request, obj, form, change)
 
     @admin.display(description="Worker User ID")
     def worker_user_id(self, obj):

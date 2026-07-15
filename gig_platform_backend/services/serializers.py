@@ -167,6 +167,8 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
             return "REJECTED"
         if obj.status in [ServiceRequest.Status.OPEN, ServiceRequest.Status.MATCHING]:
             return "PENDING"
+        if obj.status == ServiceRequest.Status.COMPLETION_PENDING:
+            return "COMPLETION_PENDING"
         return obj.status
 
     def get_has_review(self, obj):
@@ -190,6 +192,7 @@ class WorkerRecommendationResultSerializer(serializers.Serializer):
     worker_name = serializers.CharField()
     phone_number = serializers.CharField(allow_null=True)
     username = serializers.CharField(allow_null=True)
+    hired_before = serializers.BooleanField()
     service_category = serializers.CharField()
     skills = serializers.CharField(allow_null=True)
     bio = serializers.CharField(allow_null=True)
@@ -211,6 +214,7 @@ class ServiceRequestStatusUpdateSerializer(serializers.Serializer):
         choices=[
             ServiceRequest.Status.ARRIVING,
             ServiceRequest.Status.IN_PROGRESS,
+            ServiceRequest.Status.COMPLETION_PENDING,
             ServiceRequest.Status.COMPLETED,
             ServiceRequest.Status.CANCELLED,
         ]

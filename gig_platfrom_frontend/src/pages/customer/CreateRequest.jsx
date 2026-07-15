@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { servicesService } from "../../api";
 import { useApi, useForm } from "../../hooks";
 import {
@@ -21,6 +21,7 @@ const CreateRequest = () => {
   const { loading, error, execute, clearError } = useApi();
   const [categories, setCategories] = useState([]);
   const [success, setSuccess] = useState("");
+  const [pendingReviewRequest, setPendingReviewRequest] = useState(null);
 
   const { values, handleChange, setFieldValue } = useForm({
     category: "",
@@ -37,7 +38,25 @@ const CreateRequest = () => {
     setFieldValue("category", String(preSelectedCategory));
 
     fetchCategories();
+    fetchPendingReviewRequest();
   }, [navigate, preSelectedWorker, preSelectedCategory]);
+
+  const fetchPendingReviewRequest = async () => {
+    try {
+      const data = await execute(() => servicesService.getRequests());
+      const requests = Array.isArray(data) ? data : data.results || [];
+      const pending = requests.find((request) => {
+        const status = String(request.status).toUpperCase();
+        return (
+          status === "COMPLETION_PENDING" ||
+          (status === "COMPLETED" && !request.has_review)
+        );
+      });
+      setPendingReviewRequest(pending || null);
+    } catch (err) {
+      // Error handled by useApi
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -66,6 +85,10 @@ const CreateRequest = () => {
     clearError();
     setSuccess("");
 
+    if (pendingReviewRequest) {
+      return;
+    }
+
     try {
       const requestData = {
         category: values.category,
@@ -85,9 +108,12 @@ const CreateRequest = () => {
   };
 
   const selectedCategoryLabel =
-    categories.find((cat) => String(cat.id) === String(values.category))?.name ||
+    categories.find((cat) => String(cat.id) === String(values.category))
+      ?.name ||
     preSelectedCategory ||
     "Selected from worker";
+
+  const requestLocked = Boolean(pendingReviewRequest);
 
   if (loading && categories.length === 0) {
     return <Loader text="Loading..." />;
@@ -102,6 +128,33 @@ const CreateRequest = () => {
       <Card>
         <ErrorAlert message={error} onClose={clearError} />
         <SuccessAlert message={success} />
+
+        {requestLocked && (
+          <div className="mb-6 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800">
+            {String(pendingReviewRequest?.status).toUpperCase() ===
+            "COMPLETION_PENDING"
+              ? "You must confirm your previously completed work before hiring another worker."
+              : "You must submit a review for your previous completed work before hiring another worker."}
+            {pendingReviewRequest?.id && (
+              <span className="ml-1">
+                <Link
+                  to={
+                    String(pendingReviewRequest?.status).toUpperCase() ===
+                    "COMPLETION_PENDING"
+                      ? "/customer/my-requests"
+                      : `/customer/submit-review?request=${pendingReviewRequest.id}`
+                  }
+                  className="font-medium underline"
+                >
+                  {String(pendingReviewRequest?.status).toUpperCase() ===
+                  "COMPLETION_PENDING"
+                    ? "Go to My Requests"
+                    : "Review now"}
+                </Link>
+              </span>
+            )}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <Input
@@ -144,14 +197,13 @@ const CreateRequest = () => {
               variant="primary"
               loading={loading}
               disabled={loading}
-            
             >
               Create Request
             </Button>
 
             <Button
               type="button"
-              variant="outline"
+              disabled={loading || requestLocked}
               onClick={() => navigate(-1)}
             >
               Cancel

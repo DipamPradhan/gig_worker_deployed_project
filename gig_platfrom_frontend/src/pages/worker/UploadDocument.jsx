@@ -12,6 +12,7 @@ import {
   SuccessAlert,
   StatusBadge,
   EmptyState,
+  ConfirmModal,
 } from "../../components/common";
 
 const UploadDocument = () => {
@@ -22,6 +23,7 @@ const UploadDocument = () => {
   const [file, setFile] = useState(null);
   const [documentType, setDocumentType] = useState("");
   const [documentNumber, setDocumentNumber] = useState("");
+  const [documentToDelete, setDocumentToDelete] = useState(null);
 
   useEffect(() => {
     fetchDocuments();
@@ -71,11 +73,42 @@ const UploadDocument = () => {
     }
   };
 
+  const handleDeleteDocument = async () => {
+    if (!documentToDelete) {
+      return;
+    }
+
+    clearError();
+    setSuccess("");
+
+    try {
+      await execute(() =>
+        accountsService.deleteWorkerDocument(documentToDelete.id),
+      );
+      setSuccess(
+        "Document removed successfully. You can upload a new one now.",
+      );
+      setDocumentToDelete(null);
+      setFile(null);
+      setDocumentType("");
+      setDocumentNumber("");
+      const fileInput = document.getElementById("file-input");
+      if (fileInput) {
+        fileInput.value = "";
+      }
+      await fetchDocuments();
+    } catch (err) {
+      // Error handled by useApi
+    }
+  };
+
   const documentTypeOptions = [
     { value: "Citizenship", label: "Citizenship" },
     { value: "Driver's License", label: "Driver's License" },
     { value: "NIN Card", label: "NIN Card" },
   ];
+
+  const hasUploadedDocument = documents.length > 0;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -89,6 +122,13 @@ const UploadDocument = () => {
           Upload New Document
         </h2>
 
+        {hasUploadedDocument && (
+          <div className="mb-4 rounded-md border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">
+            You can upload only one document at a time. Remove the existing
+            document below before uploading a new one.
+          </div>
+        )}
+
         <ErrorAlert message={error} onClose={clearError} />
         <SuccessAlert message={success} onClose={() => setSuccess("")} />
 
@@ -101,6 +141,7 @@ const UploadDocument = () => {
             options={documentTypeOptions}
             placeholder="Select document type"
             required
+            disabled={hasUploadedDocument}
           />
 
           <div className="mb-4">
@@ -111,6 +152,7 @@ const UploadDocument = () => {
               onChange={(e) => setDocumentNumber(e.target.value)}
               placeholder="Enter document number"
               required
+              disabled={hasUploadedDocument}
             />
 
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -123,6 +165,7 @@ const UploadDocument = () => {
               accept=".pdf,.jpg,.jpeg,.png"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               required
+              disabled={hasUploadedDocument}
             />
             <p className="text-sm text-gray-500 mt-1">
               Accepted formats: PDF, JPG, PNG. Max size: 5MB
@@ -142,7 +185,13 @@ const UploadDocument = () => {
             type="submit"
             variant="primary"
             loading={loading}
-            disabled={loading || !file || !documentType || !documentNumber}
+            disabled={
+              loading ||
+              hasUploadedDocument ||
+              !file ||
+              !documentType ||
+              !documentNumber
+            }
           >
             Upload Document
           </Button>
@@ -164,7 +213,7 @@ const UploadDocument = () => {
             {documents.map((doc) => (
               <div
                 key={doc.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center space-x-4">
                   <div className="text-2xl">📄</div>
@@ -177,14 +226,38 @@ const UploadDocument = () => {
                     </p>
                   </div>
                 </div>
-                <StatusBadge
-                  status={(doc.verification_status || "Pending").toUpperCase()}
-                />
+                <div className="flex items-center gap-3">
+                  <StatusBadge
+                    status={(
+                      doc.verification_status || "Pending"
+                    ).toUpperCase()}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDocumentToDelete(doc)}
+                    disabled={loading}
+                  >
+                    Remove
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
         )}
       </Card>
+
+      <ConfirmModal
+        isOpen={Boolean(documentToDelete)}
+        title="Remove uploaded document?"
+        message="This will delete your current uploaded document and enable the upload form again."
+        confirmText="Remove"
+        cancelText="Keep"
+        variant="danger"
+        onConfirm={handleDeleteDocument}
+        onCancel={() => setDocumentToDelete(null)}
+      />
 
       <div className="mt-6">
         <Button variant="outline" onClick={() => navigate("/worker/dashboard")}>

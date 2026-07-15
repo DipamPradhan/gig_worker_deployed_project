@@ -26,14 +26,14 @@ const AssignedJobs = () => {
     fetchJobs();
   }, []);
 
-//       useEffect(() => {
-//         fetchJobs();
-//   const interval = setInterval(() => {
-//     fetchJobs();
-//   }, 1000);
+  //       useEffect(() => {
+  //         fetchJobs();
+  //   const interval = setInterval(() => {
+  //     fetchJobs();
+  //   }, 1000);
 
-//   return () => clearInterval(interval);
-// }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const fetchJobs = async () => {
     try {
@@ -52,7 +52,11 @@ const AssignedJobs = () => {
       await execute(() =>
         servicesService.updateRequestStatus(requestId, status),
       );
-      setSuccess(`Status updated to ${status.replace("_", " ")}`);
+      setSuccess(
+        status === "COMPLETION_PENDING"
+          ? "Completion submitted. Waiting for customer confirmation."
+          : `Status updated to ${status.replace("_", " ")}`,
+      );
       await fetchJobs();
     } catch (err) {
       // Error handled by useApi
@@ -70,7 +74,7 @@ const AssignedJobs = () => {
     const statusFlow = {
       ASSIGNED: ["ARRIVING", "CANCELLED"],
       ARRIVING: ["IN_PROGRESS", "CANCELLED"],
-      IN_PROGRESS: ["COMPLETED", "CANCELLED"],
+      IN_PROGRESS: ["COMPLETION_PENDING", "CANCELLED"],
     };
     return statusFlow[currentStatus] || [];
   };
@@ -81,6 +85,8 @@ const AssignedJobs = () => {
         return "primary";
       case "IN_PROGRESS":
         return "warning";
+      case "COMPLETION_PENDING":
+        return "info";
       case "COMPLETED":
         return "success";
       case "CANCELLED":
@@ -96,6 +102,8 @@ const AssignedJobs = () => {
         return "Mark as Arriving";
       case "IN_PROGRESS":
         return "Start Work";
+      case "COMPLETION_PENDING":
+        return "Mark Complete";
       case "COMPLETED":
         return "Mark Complete";
       case "CANCELLED":
@@ -136,7 +144,10 @@ const AssignedJobs = () => {
             const nextStatuses = getNextStatuses(currentStatus);
 
             return (
-              <Card key={request.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={request.id}
+                className="hover:shadow-md transition-shadow"
+              >
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between">
                   <div className="flex-1 mb-4 md:mb-0 w-4/5">
                     <div className="flex items-center space-x-3 mb-2">
@@ -148,11 +159,11 @@ const AssignedJobs = () => {
 
                     <p className="text-sm text-gray-600 mb-1">
                       <strong> Category: </strong>{" "}
-                     {request.category_name || "N/A"}
+                      {request.category_name || "N/A"}
                     </p>
 
                     <p className="text-sm text-gray-600 mb-1">
-                     <strong> Description: </strong>{" "}
+                      <strong> Description: </strong>{" "}
                       {request.description || "No description provided"}
                     </p>
 
@@ -164,7 +175,8 @@ const AssignedJobs = () => {
                       </div>
                       <div>
                         <strong>Phone:</strong>{" "}
-                        {request.requester_details?.phone_number || "Not available"}
+                        {request.requester_details?.phone_number ||
+                          "Not available"}
                       </div>
                       <div>
                         <strong>Address:</strong>{" "}
@@ -206,6 +218,12 @@ const AssignedJobs = () => {
                     {currentStatus === "COMPLETED" && (
                       <div className="text-green-600 font-medium text-center">
                         ✓ Completed
+                      </div>
+                    )}
+
+                    {currentStatus === "COMPLETION_PENDING" && (
+                      <div className="text-blue-600 font-medium text-center">
+                        Awaiting customer confirmation
                       </div>
                     )}
 

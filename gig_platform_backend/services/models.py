@@ -25,6 +25,7 @@ class ServiceRequest(models.Model):
 		ASSIGNED = "ASSIGNED", "Assigned"
 		ARRIVING = "ARRIVING", "Arriving"
 		IN_PROGRESS = "IN_PROGRESS", "In Progress"
+		COMPLETION_PENDING = "COMPLETION_PENDING", "Completion Pending"
 		COMPLETED = "COMPLETED", "Completed"
 		CANCELLED = "CANCELLED", "Cancelled"
 
@@ -91,6 +92,7 @@ class ServiceRequestEvent(models.Model):
 		REJECTED = "REJECTED", "Rejected"
 		ARRIVING = "ARRIVING", "Arriving"
 		STARTED = "STARTED", "Started"
+		COMPLETION_PENDING = "COMPLETION_PENDING", "Completion Pending"
 		COMPLETED = "COMPLETED", "Completed"
 		CANCELLED = "CANCELLED", "Cancelled"
 

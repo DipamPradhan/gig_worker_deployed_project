@@ -9,6 +9,7 @@ from .views import (
     WorkerAssignedRequestListView,
     RecommendedWorkerSearchView,
     ServiceRequestWorkerStatusUpdateView,
+    ServiceRequestCustomerConfirmCompletionView,
 )
 
 urlpatterns = [
@@ -31,5 +32,10 @@ urlpatterns = [
         "requests/<uuid:request_id>/worker-status/",
         ServiceRequestWorkerStatusUpdateView.as_view(),
         name="request_worker_status_update",
+    ),
+    path(
+        "requests/<uuid:request_id>/confirm-completion/",
+        ServiceRequestCustomerConfirmCompletionView.as_view(),
+        name="request_customer_confirm_completion",
     ),
 ]

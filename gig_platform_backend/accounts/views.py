@@ -119,6 +119,20 @@ class WorkerDocumentUploadView(generics.CreateAPIView):
     queryset = WorkerDocument.objects.all()
     parser_classes = [MultiPartParser, FormParser]
 
+class WorkerDocumentDeleteView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = WorkerDocumentSerializer
+    lookup_field = "id"
+    lookup_url_kwarg = "document_id"
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if not hasattr(user, "worker_profile"):
+            return WorkerDocument.objects.none()
+
+        return WorkerDocument.objects.filter(worker_profile=user.worker_profile)
+
 
 class WorkerAvailabilityUpdateView(generics.UpdateAPIView):
     serializer_class = WorkerAvailabilitySerializer

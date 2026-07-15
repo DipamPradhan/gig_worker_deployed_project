@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faClipboardList, faHelmetSafety} from "@fortawesome/free-solid-svg-icons";
+import {
+  faMagnifyingGlass,
+  faClipboardList,
+  faHelmetSafety,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { useAuth } from "../../context";
 import { servicesService } from "../../api";
@@ -12,17 +16,19 @@ import {
   ErrorAlert,
   StatusBadge,
   EmptyState,
+  ConfirmModal,
 } from "../../components/common";
 import ProgressBar from "./ProgressBar";
 import WorkChart from "./WorkChart";
-
-
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
   const { loading, error, execute, clearError } = useApi();
   const [requests, setRequests] = useState([]);
-  
+  const [pendingCompletionRequest, setPendingCompletionRequest] =
+    useState(null);
+  const dismissedCompletionRequestIdRef = useRef(null);
+
   const prevRequestsRef = useRef([]);
 
   const getRecentRequests = useCallback(async () => {
@@ -37,8 +43,10 @@ const CustomerDashboard = () => {
 
     return oldRequests.every((oldRequest, index) => {
       const newRequest = newRequests[index];
-      const oldStatus = oldRequest?.status?.toString()?.trim().toLowerCase() || "";
-      const newStatus = newRequest?.status?.toString()?.trim().toLowerCase() || "";
+      const oldStatus =
+        oldRequest?.status?.toString()?.trim().toLowerCase() || "";
+      const newStatus =
+        newRequest?.status?.toString()?.trim().toLowerCase() || "";
       return oldRequest?.id === newRequest?.id && oldStatus === newStatus;
     });
   };
@@ -50,6 +58,12 @@ const CustomerDashboard = () => {
         if (data) {
           setRequests(data);
           prevRequestsRef.current = data;
+          const pending = data.find(
+            (request) =>
+              String(request.status).toUpperCase() === "COMPLETION_PENDING" &&
+              request.id !== dismissedCompletionRequestIdRef.current,
+          );
+          setPendingCompletionRequest(pending || null);
         }
       } catch (err) {
         // Error handled by useApi
@@ -68,6 +82,12 @@ const CustomerDashboard = () => {
         if (!areStatusesEqual(prevRequestsRef.current, newData)) {
           setRequests(newData);
           prevRequestsRef.current = newData;
+          const pending = newData.find(
+            (request) =>
+              String(request.status).toUpperCase() === "COMPLETION_PENDING" &&
+              request.id !== dismissedCompletionRequestIdRef.current,
+          );
+          setPendingCompletionRequest(pending || null);
         }
       } catch (err) {
         // Ignore polling failures to avoid flashing the dashboard
@@ -82,6 +102,19 @@ const CustomerDashboard = () => {
       request?.status &&
       !["completed", "cancelled"].includes(request.status.toLowerCase()),
   );
+
+  const confirmCompletion = async (requestId) => {
+    try {
+      await servicesService.confirmRequestCompletion(requestId);
+      dismissedCompletionRequestIdRef.current = null;
+      setPendingCompletionRequest(null);
+      const refreshed = await getRecentRequests();
+      setRequests(refreshed);
+      prevRequestsRef.current = refreshed;
+    } catch (err) {
+      // Error handled by useApi through dashboard refreshes
+    }
+  };
 
   return (
     <div>
@@ -99,7 +132,9 @@ const CustomerDashboard = () => {
         <Link to="/customer/search-workers">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <div className="text-center py-4">
-              <div className="text-4xl mb-2"><FontAwesomeIcon icon={faMagnifyingGlass} /></div>
+              <div className="text-4xl mb-2">
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
+              </div>
               <h3 className="font-medium text-gray-900">Find Workers</h3>
               <p className="text-sm text-gray-500">
                 Search for available workers
@@ -111,9 +146,13 @@ const CustomerDashboard = () => {
         <Link to="/customer/my-requests">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <div className="text-center py-4">
-              <div className="text-4xl mb-2"><FontAwesomeIcon icon={faClipboardList} /></div>
+              <div className="text-4xl mb-2">
+                <FontAwesomeIcon icon={faClipboardList} />
+              </div>
               <h3 className="font-medium text-gray-900">Request History</h3>
-              <p className="text-sm text-gray-500">Select worker then fill request form</p>
+              <p className="text-sm text-gray-500">
+                Select worker then fill request form
+              </p>
             </div>
           </Card>
         </Link>
@@ -121,7 +160,9 @@ const CustomerDashboard = () => {
         <Link to="/worker/become-worker">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <div className="text-center py-4">
-              <div className="text-4xl mb-2"><FontAwesomeIcon icon={faHelmetSafety} /></div>
+              <div className="text-4xl mb-2">
+                <FontAwesomeIcon icon={faHelmetSafety} />
+              </div>
               <h3 className="font-medium text-gray-900">Become Worker</h3>
               <p className="text-sm text-gray-500">
                 Switch to worker mode and start earning
@@ -135,8 +176,24 @@ const CustomerDashboard = () => {
       <Card title="Current Request">
         <ErrorAlert message={error} onClose={clearError} />
 
+        <ConfirmModal
+          isOpen={Boolean(pendingCompletionRequest)}
+          title="Have you received the completed work?"
+          message="The worker has marked this job as ready for completion. Confirm only if the work is finished."
+          confirmText="Yes, completed"
+          cancelText="Not yet"
+          variant="success"
+          onConfirm={() => confirmCompletion(pendingCompletionRequest.id)}
+          onCancel={() =>
+            {
+              dismissedCompletionRequestIdRef.current = pendingCompletionRequest.id;
+              setPendingCompletionRequest(null);
+            }
+          }
+        />
+
         {loading ? (
-         <></>
+          <></>
         ) : requests?.length === 0 ? (
           <EmptyState
             title="No requests yet"
@@ -148,7 +205,7 @@ const CustomerDashboard = () => {
                 (window.location.href = "/customer/search-workers"),
             }}
           />
-        ) : activeRequest? (
+        ) : activeRequest ? (
           <div className="space-y-2">
             <ProgressBar status={activeRequest.status} />
           </div>
@@ -158,16 +215,13 @@ const CustomerDashboard = () => {
             message="Your recent request is completed or cancelled."
             icon=""
           />
-          
         )}
       </Card>
-       <div className="mt-4"></div>
+      <div className="mt-4"></div>
       <Card title="Request Category Split">
-       {/* <h4 className="">Request Category split</h4> */}
-        <WorkChart/>
+        {/* <h4 className="">Request Category split</h4> */}
+        <WorkChart />
       </Card>
-
-  
     </div>
   );
 };

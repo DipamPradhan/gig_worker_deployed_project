@@ -40,7 +40,10 @@ const servicesService = {
   // POST /services/requests/{request_id}/cancel/
   cancelRequest: async (requestId, reason = "") => {
     const payload = reason?.trim() ? { reason: reason.trim() } : {};
-    const response = await api.post(`/services/requests/${requestId}/cancel/`, payload);
+    const response = await api.post(
+      `/services/requests/${requestId}/cancel/`,
+      payload,
+    );
     return response.data;
   },
 
@@ -69,6 +72,15 @@ const servicesService = {
     const response = await api.post(
       `/services/requests/${requestId}/worker-status/`,
       { status },
+    );
+    return response.data;
+  },
+
+  // POST /services/requests/{request_id}/confirm-completion/
+  confirmRequestCompletion: async (requestId) => {
+    const response = await api.post(
+      `/services/requests/${requestId}/confirm-completion/`,
+      {},
     );
     return response.data;
   },

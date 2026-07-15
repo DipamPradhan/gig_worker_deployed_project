@@ -7,6 +7,7 @@ from .views import (
     UserProfileView,
     WorkerDocumentListView,
     WorkerDocumentUploadView,
+        WorkerDocumentDeleteView,
     WorkerProfileView,
     WorkerAvailabilityUpdateView,
     AllWorkerListView,
@@ -30,6 +31,11 @@ urlpatterns = [
         "worker/documents/upload/",
         WorkerDocumentUploadView.as_view(),
         name="upload_document",
+    ),
+    path(
+        "worker/documents/<uuid:document_id>/",
+        WorkerDocumentDeleteView.as_view(),
+        name="delete_document",
     ),
     path(
         "worker/availability/",
