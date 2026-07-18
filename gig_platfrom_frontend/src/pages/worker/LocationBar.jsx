@@ -97,7 +97,7 @@ const LocationBar = () => {
               data: dataValues,
               backgroundColor: labels.map((_, idx) =>
                 [
-                  "#3b82f6",
+                  "#5b8ea7",
                   "#f97316",
                   "#14b8a6",
                   "#eab308",

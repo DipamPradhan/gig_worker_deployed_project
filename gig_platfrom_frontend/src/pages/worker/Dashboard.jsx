@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faClipboardList, faBarsProgress, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faClipboardList, faBarsProgress, faStar, faTimesRectangle, faClock, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context";
 import { accountsService, servicesService } from "../../api";
 import { useApi } from "../../hooks";
@@ -103,7 +103,7 @@ const WorkerDashboard = () => {
       {needsVerification && (
         <Card className="mb-6 border-blue-200 bg-blue-50">
           <div className="flex items-center">
-            <div className="text-3xl mr-4">⏳</div>
+            <div className="text-3xl mr-4"><FontAwesomeIcon icon={faClock} /></div>
             <div>
               <h3 className="font-medium text-blue-800">
                 Verification Pending
@@ -120,7 +120,7 @@ const WorkerDashboard = () => {
       {workerProfile?.verification_status === "Rejected" && (
         <Card className="mb-6 border-red-200 bg-red-50">
           <div className="flex items-start">
-            <div className="text-3xl mr-4">🛑</div>
+            <div className="text-3xl mr-4"><FontAwesomeIcon icon={faCircleXmark} /></div>
             <div>
               <h3 className="font-medium text-red-800">
                 Worker Profile Rejected/Halted

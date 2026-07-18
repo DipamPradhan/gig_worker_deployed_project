@@ -1,4 +1,6 @@
 const StatusBadge = ({ status, type = "default" }) => {
+  
+  
   const statusStyles = {
     // Request statuses
     OPEN: "bg-white text-yellow-800 border border-black",
@@ -41,7 +43,7 @@ default: "bg-white text-gray-800 border border-black",
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${styleClass}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold ${styleClass}`}
     >
       {status?.replace(/_/g, " ") || "Unknown"}
     </span>
