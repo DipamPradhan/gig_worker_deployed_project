@@ -210,9 +210,12 @@ const SearchWorkers = () => {
             name="radius"
             type="number"
             value={radius}
-            onChange={(e) => setRadius(e.target.value)}
+             onChange={(e) => {
+                const value = Number(e.target.value);
+                setRadius(value < 0 ? 0 : value);
+              }}
             placeholder="10"
-            min="1"
+            min="0.1"
             max="100"
           />
 
