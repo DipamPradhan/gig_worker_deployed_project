@@ -290,7 +290,7 @@ const SearchWorkers = () => {
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${rankTheme.badge}`}
                       >
-                        #{rank}
+                        {rank}
                       </div>
                       <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center">
                         <span className="text-2xl">👤</span>
@@ -301,7 +301,7 @@ const SearchWorkers = () => {
                             {badges.map((badge) => (
                               <span
                                 key={`${worker.worker_id}-${badge}`}
-                                className="text-xs uppercase tracking-wide text-purple-950 bg-purple-200 px-2 py-0.5 rounded"
+                                className="text-xs uppercase tracking-wide text-purple-600 border border-black bg-white px-2 py-0.5 rounded"
                               >
                                 {badge}
                               </span>

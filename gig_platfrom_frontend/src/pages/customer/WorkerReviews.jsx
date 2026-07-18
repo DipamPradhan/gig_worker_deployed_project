@@ -143,12 +143,20 @@ const WorkerReviews = () => {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className={`font-medium ${"text-gray-900"}`}>
+                    {/* <span className={`font-medium ${"text-gray-900"}`}>
                       {getReviewerLabel(review)}
                     </span>
                     {isCurrentUserReview(review) && (
                       <span className="font-medium text-red-600">(me)</span>
-                    )}
+                    )} */}
+
+                    {isCurrentUserReview(review) ? (
+                        <span className="font-medium text-red-600">SELF</span>
+                      ) : (
+                        <span className="font-medium text-gray-900">
+                          {getReviewerLabel(review)}
+                        </span>
+                      )}
                     <StarRating rating={review.rating} readonly size="sm" />
                   </div>
                   <p className="text-sm text-gray-500">
