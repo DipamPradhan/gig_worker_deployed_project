@@ -14,7 +14,7 @@ const EmptyState = ({
       {action && (
         <button
           onClick={action.onClick}
-          className="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors"
+          className="bg-[#5b8ea7] text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors"
         >
           {action.label}
         </button>

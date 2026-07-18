@@ -207,7 +207,7 @@ const WorkerDashboard = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Link to="/worker/inbox">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className=" transition-shadow cursor-pointer">
             <div className="text-center py-4">
               <div className="relative inline-flex items-center justify-center text-4xl mb-2">
                 <FontAwesomeIcon icon={faEnvelope} />
@@ -225,7 +225,7 @@ const WorkerDashboard = () => {
         </Link>
 
         <Link to="/worker/jobs">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className=" transition-shadow cursor-pointer">
             <div className="text-center py-4">
               <div className="text-4xl mb-2"><FontAwesomeIcon icon={faClipboardList} /></div>
               <h3 className="font-medium text-gray-900">My Jobs</h3>
@@ -235,7 +235,7 @@ const WorkerDashboard = () => {
         </Link>
 
         <Link to="/worker/availability">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className=" transition-shadow cursor-pointer">
             <div className="text-center py-4">
               <div className="text-4xl mb-2"><FontAwesomeIcon icon={faBarsProgress} /></div>
               <h3 className="font-medium text-gray-900">Availability</h3>

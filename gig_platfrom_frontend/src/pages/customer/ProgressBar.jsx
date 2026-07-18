@@ -88,7 +88,7 @@ const ProgressBar = ({ status }) => {
                   transition-all duration-300
 
                   ${isCompleted ? "bg-green-500 text-white" : ""}
-                  ${isActive ? "bg-blue-500 text-white " : ""}
+                  ${isActive ? "bg-[#5b8ea7] text-white " : ""}
                   ${!isCompleted && !isActive ? "bg-gray-300" : ""}
                 `}
               >

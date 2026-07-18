@@ -130,7 +130,7 @@ const CustomerDashboard = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Link to="/customer/search-workers">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className=" transition-shadow cursor-pointer">
             <div className="text-center py-4">
               <div className="text-4xl mb-2">
                 <FontAwesomeIcon icon={faMagnifyingGlass} />
@@ -144,7 +144,7 @@ const CustomerDashboard = () => {
         </Link>
 
         <Link to="/customer/my-requests">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className=" transition-shadow cursor-pointer">
             <div className="text-center py-4">
               <div className="text-4xl mb-2">
                 <FontAwesomeIcon icon={faClipboardList} />
@@ -158,7 +158,7 @@ const CustomerDashboard = () => {
         </Link>
 
         <Link to="/worker/become-worker">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Card className=" transition-shadow cursor-pointer">
             <div className="text-center py-4">
               <div className="text-4xl mb-2">
                 <FontAwesomeIcon icon={faHelmetSafety} />

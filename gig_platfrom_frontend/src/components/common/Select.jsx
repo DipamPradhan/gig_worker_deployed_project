@@ -28,7 +28,7 @@ const Select = ({
         onChange={onChange}
         disabled={disabled}
         required={required}
-        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#457993] focus:border-[#457993] ${
           error ? "border-red-500" : "border-gray-300"
         } ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
       >

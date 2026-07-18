@@ -14,7 +14,7 @@ const ConfirmModal = ({
     danger: "bg-red-600 hover:bg-red-700",
     warning: "bg-yellow-600 hover:bg-yellow-700",
     success: "bg-green-600 hover:bg-green-700",
-    primary: "bg-primary-600 hover:bg-primary-700",
+    primary: "bg-[#5b8ea7] hover:bg-[#457993]",
   };
 
   return (

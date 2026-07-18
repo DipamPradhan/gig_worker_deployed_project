@@ -14,7 +14,7 @@ const Button = ({
 
   const variantStyles = {
     primary:
-      "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:bg-primary-300",
+      "bg-[#5b8ea7] text-white hover:bg-[#5b8ea7] focus:ring-[#79aec7] disabled:bg-[#79aec7]",
     secondary:
       "bg-gray-300 text-black hover:bg-gray-400 focus:ring-gray-500 disabled:bg-gray-300 disabled:text-black",
     success:

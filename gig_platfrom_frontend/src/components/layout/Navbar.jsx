@@ -58,7 +58,7 @@ const Navbar = () => {
           {/* Logo and Desktop Navigation */}
           <div className="flex">
             <Link to="/" className="flex items-center">
-              <span className="text-xl font-bold text-primary-600">
+              <span className="text-xl font-bold text-[#5b8ea7]">
                 GigWork
               </span>
             </Link>
@@ -75,8 +75,8 @@ const Navbar = () => {
                     to={item.path}
                     className={`inline-flex items-center px-3 py-2 text-sm font-medium ${
                       isActive(item.path)
-                        ? "text-primary-600 border-b-2 border-primary-600"
-                        : "text-gray-600 hover:text-primary-600"
+                        ? "text-[#5b8ea7] border-b-2 border-[#5b8ea7]"
+                        : "text-gray-600 hover:text-[#5b8ea7]"
                     }`}
                   >
                     {item.label}
