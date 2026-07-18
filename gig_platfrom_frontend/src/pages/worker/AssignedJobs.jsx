@@ -216,20 +216,20 @@ const AssignedJobs = () => {
                     ))}
 
                     {currentStatus === "COMPLETED" && (
-                      <div className="text-green-600 font-medium text-center">
-                        ✓ Completed
+                      <div className="text-green-600 font-bold text-center">
+                         Completed
                       </div>
                     )}
 
                     {currentStatus === "COMPLETION_PENDING" && (
-                      <div className="text-blue-600 font-medium text-center">
+                      <div className="text-blue-600 font-bold text-center">
                         Awaiting customer confirmation
                       </div>
                     )}
 
                     {currentStatus === "CANCELLED" && (
-                      <div className="text-red-600 font-medium text-center">
-                        ✗ Cancelled
+                      <div className="text-red-600 font-bold text-center">
+                         Cancelled
                       </div>
                     )}
                   </div>
