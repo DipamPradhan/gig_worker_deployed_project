@@ -5,7 +5,7 @@ import { accountsService } from "../../api";
 import { useApi } from "../../hooks";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faToggleOn, faToggleOff, faUserTie} from "@fortawesome/free-solid-svg-icons";
+import { faToggleOn, faToggleOff, faUserTie, faTriangleExclamation} from "@fortawesome/free-solid-svg-icons";
 import {
   Card,
   Button,
@@ -111,7 +111,7 @@ const Availability = () => {
       {!canBeActive && (
         <Card className="mb-6 border-yellow-200 bg-yellow-50">
           <div className="flex items-start">
-            <div className="text-2xl mr-4">⚠️</div>
+            <div className="text-2xl mr-4"><FontAwesomeIcon icon={faTriangleExclamation} /></div>
             <div>
               <h3 className="font-medium text-yellow-800">
                 Cannot Set Active Status
@@ -148,7 +148,7 @@ const Availability = () => {
               key={option.value}
               className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                 currentStatus === option.value
-                  ? "border-primary-500 bg-primary-50"
+                  ? "border-[#3a6279] "
                   : option.disabled
                     ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
                     : "border-gray-200 hover:border-primary-300 hover:bg-gray-50"
@@ -172,7 +172,7 @@ const Availability = () => {
                   </div>
                 </div>
                 {currentStatus === option.value && (
-                  <span className="text-primary-600">✓ Current</span>
+                  <span className="text-grey-900"> Current</span>
                 )}
                 {option.disabled && currentStatus !== option.value && (
                   <span className="text-xs text-gray-400">
