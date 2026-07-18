@@ -127,7 +127,7 @@ const MyRequests = () => {
         <EmptyState
           title="No requests yet"
           message="You haven't created any service requests yet."
-          icon="📋"
+          // icon="📋"
           action={{
             label: "Find Workers",
             onClick: () => (window.location.href = "/customer/search-workers"),
@@ -145,7 +145,7 @@ const MyRequests = () => {
             return (
               <Card
                 key={request.id}
-                className="hover:shadow-md transition-shadow"
+                className="transition-shadow"
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div className="mb-4 md:mb-0 flex-1 min-w-0">

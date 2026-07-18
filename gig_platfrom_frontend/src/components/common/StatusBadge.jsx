@@ -1,39 +1,39 @@
 const StatusBadge = ({ status, type = "default" }) => {
   const statusStyles = {
     // Request statuses
-    OPEN: "bg-yellow-100 text-yellow-800",
-    MATCHING: "bg-blue-100 text-blue-800",
-    PENDING: "bg-yellow-100 text-yellow-800",
-    BROADCASTING: "bg-blue-100 text-blue-800",
-    ASSIGNED: "bg-purple-100 text-purple-800",
-    ARRIVING: "bg-indigo-100 text-indigo-800",
-    IN_PROGRESS: "bg-orange-100 text-orange-800",
-    COMPLETION_PENDING: "bg-blue-100 text-blue-800",
-    COMPLETED: "bg-green-100 text-green-800",
-    CANCELLED: "bg-red-100 text-red-800",
+    OPEN: "bg-white text-yellow-800 border border-black",
+  MATCHING: "bg-white text-blue-800 border border-black",
+  PENDING: "bg-white text-yellow-800 border border-black",
+  BROADCASTING: "bg-white text-blue-800 border border-black",
+  ASSIGNED: "bg-white text-purple-800 border border-black",
+  ARRIVING: "bg-white text-indigo-800 border border-black",
+  IN_PROGRESS: "bg-white text-orange-800 border border-black",
+  COMPLETION_PENDING: "bg-white text-blue-800 border border-black",
+  COMPLETED: "bg-white text-green-800 border border-black",
+  CANCELLED: "bg-white text-red-800 border border-black",
 
-    // Broadcast statuses
-    SENT: "bg-blue-100 text-blue-800",
-    VIEWED: "bg-indigo-100 text-indigo-800",
-    ACCEPTED: "bg-green-100 text-green-800",
-    EXPIRED: "bg-gray-100 text-gray-800",
+   // Broadcast statuses
+SENT: "bg-white text-blue-800 border border-black",
+VIEWED: "bg-white text-indigo-800 border border-black",
+ACCEPTED: "bg-white text-green-800 border border-black",
+EXPIRED: "bg-white text-gray-800 border border-black",
 
-    // Worker availability
-    ACTIVE: "bg-green-100 text-green-800",
-    INACTIVE: "bg-gray-100 text-gray-800",
-    BUSY: "bg-orange-100 text-orange-800",
+// Worker availability
+ACTIVE: "bg-white text-green-800 border border-black",
+INACTIVE: "bg-white text-gray-800 border border-black",
+BUSY: "bg-white text-orange-800 border border-black",
 
-    // Verification statuses
-    VERIFIED: "bg-green-100 text-green-800",
-    UNVERIFIED: "bg-yellow-100 text-yellow-800",
-    REJECTED: "bg-red-100 text-red-800",
+// Verification statuses
+VERIFIED: "bg-white text-green-800 border border-black",
+UNVERIFIED: "bg-white text-yellow-800 border border-black",
+REJECTED: "bg-white text-red-800 border border-black",
 
-    // Generic statuses
-    success: "bg-green-100 text-green-800",
-    warning: "bg-yellow-100 text-yellow-800",
-    error: "bg-red-100 text-red-800",
-    info: "bg-blue-100 text-blue-800",
-    default: "bg-gray-100 text-gray-800",
+// Generic statuses
+success: "bg-white text-green-800 border border-black",
+warning: "bg-white text-yellow-800 border border-black",
+error: "bg-white text-red-800 border border-black",
+info: "bg-white text-blue-800 border border-black",
+default: "bg-white text-gray-800 border border-black",
   };
 
   const styleClass =
@@ -41,7 +41,7 @@ const StatusBadge = ({ status, type = "default" }) => {
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styleClass}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${styleClass}`}
     >
       {status?.replace(/_/g, " ") || "Unknown"}
     </span>
