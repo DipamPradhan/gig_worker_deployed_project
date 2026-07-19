@@ -359,15 +359,9 @@ class ServiceRequestCustomerCancelView(generics.GenericAPIView):
 			requester=request.user,
 		)
 
-		if service_request.assigned_worker_id is not None:
-			return Response(
-				{"detail": "You can only cancel before a worker accepts the request."},
-				status=status.HTTP_400_BAD_REQUEST,
-			)
-
 		if service_request.status not in [ServiceRequest.Status.OPEN, ServiceRequest.Status.MATCHING]:
 			return Response(
-				{"detail": "Only open or matching requests can be cancelled."},
+				{"detail": "You can only cancel before a worker accepts the request."},
 				status=status.HTTP_400_BAD_REQUEST,
 			)
 

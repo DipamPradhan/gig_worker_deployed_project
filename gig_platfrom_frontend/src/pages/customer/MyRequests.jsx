@@ -138,15 +138,12 @@ const MyRequests = () => {
           {requests.map((request) => {
             const displayStatus =
               request.customer_visible_status || request.status;
-            const canCancelBeforeAccept =
-              !request.assigned_worker &&
-              ["OPEN", "MATCHING"].includes(request.status);
+            const canCancelBeforeAccept = ["OPEN", "MATCHING"].includes(
+              request.status,
+            );
 
             return (
-              <Card
-                key={request.id}
-                className="transition-shadow"
-              >
+              <Card key={request.id} className="transition-shadow">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div className="mb-4 md:mb-0 flex-1 min-w-0">
                     <div className="flex items-center space-x-3 mb-2">
@@ -281,7 +278,7 @@ const MyRequests = () => {
       <ConfirmModal
         isOpen={confirmModal.isOpen}
         title="Cancel This Request?"
-        message="Are you sure you want to cancel this request before worker acceptance?"
+        message="Are you sure you want to cancel this request while it is still waiting for worker acceptance?"
         confirmText="Cancel Request"
         variant="danger"
         onConfirm={() => cancelRequest(confirmModal.requestId)}
