@@ -109,7 +109,7 @@ const Availability = () => {
 
       {/* Verification Status */}
       {!canBeActive && (
-        <Card className="mb-6 border-yellow-200 bg-yellow-50">
+        <Card className="mb-6 border-yellow-700 text-yellow-700">
           <div className="flex items-start">
             <div className="text-2xl mr-4"><FontAwesomeIcon icon={faTriangleExclamation} /></div>
             <div>

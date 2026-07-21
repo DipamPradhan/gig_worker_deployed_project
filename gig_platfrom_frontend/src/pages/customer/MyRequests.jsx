@@ -127,7 +127,7 @@ const MyRequests = () => {
         <EmptyState
           title="No requests yet"
           message="You haven't created any service requests yet."
-          // icon="📋"
+          
           action={{
             label: "Find Workers",
             onClick: () => (window.location.href = "/customer/search-workers"),
@@ -218,7 +218,7 @@ const MyRequests = () => {
                     {canCancelBeforeAccept && (
                       <Button
                         variant="danger"
-                        size="sm"
+                        size="lg"
                         className="w-full"
                         onClick={() => openCancelModal(request.id)}
                       >
@@ -262,7 +262,7 @@ const MyRequests = () => {
                       <Link
                         to={`/customer/reviews?worker=${request.assigned_worker_details.worker_id}`}
                       >
-                        <Button variant="danger" size="lg" className="w-full">
+                        <Button variant="primary" size="lg" className="w-full">
                           View Worker
                         </Button>
                       </Link>

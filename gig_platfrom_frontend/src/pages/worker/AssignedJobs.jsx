@@ -86,7 +86,7 @@ const AssignedJobs = () => {
       case "IN_PROGRESS":
         return "warning";
       case "COMPLETION_PENDING":
-        return "info";
+        return "primary";
       case "COMPLETED":
         return "success";
       case "CANCELLED":
@@ -133,7 +133,7 @@ const AssignedJobs = () => {
         <EmptyState
           title="No assigned jobs"
           message="You don't have any assigned jobs at the moment."
-          icon="📋"
+          // icon="📋"
         />
       ) : (
         <div className="space-y-4">

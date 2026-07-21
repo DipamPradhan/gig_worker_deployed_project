@@ -136,20 +136,20 @@ const WorkerDashboard = () => {
       )}
 
       {needsDocument && user?.role === "worker" && (
-        <Card className="mb-6 border-orange-200 bg-orange-50">
+        <Card className="mb-6 border-yellow-700 text-yellow-700">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-orange-800">
+              <h3 className="font-medium text-yellow-700">
                 Upload Required Documents
               </h3>
-              <p className="text-sm text-orange-700">
+              <p className="text-sm text-yellow-600">
                 Please upload your verification documents to complete your
                 profile.
               </p>
             </div>
             <Link
               to="/worker/upload-document"
-              className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
+              className="bg-yellow-700 text-white px-4 py-2 rounded hover:bg-yellow-800"
             >
               Upload Document
             </Link>

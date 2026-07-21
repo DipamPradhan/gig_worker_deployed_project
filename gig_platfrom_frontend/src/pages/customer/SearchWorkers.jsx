@@ -234,8 +234,8 @@ const SearchWorkers = () => {
       <ErrorAlert message={error} onClose={clearError} />
 
       {requestLocked && (
-        <div className="mb-6 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800 flex items-center justify-between gap-4">
-          <p>
+        <div className="mb-4 rounded-lg border border-yellow-700  px-4 py-3 text-sm text-yellow-700 flex items-center justify-between gap-4">
+          <p className="font-bold">
             {String(pendingReviewRequest?.status).toUpperCase() ===
             "COMPLETION_PENDING"
               ? "You must confirm your previously completed work before hiring another worker."
@@ -249,7 +249,7 @@ const SearchWorkers = () => {
                   ? "/customer/my-requests"
                   : `/customer/submit-review?request=${pendingReviewRequest.id}`
               }
-              className="inline-flex items-center rounded-md bg-orange-600 px-3 py-2 text-white font-medium hover:bg-orange-700"
+              className="inline-flex items-center rounded-md bg-yellow-700 px-3 py-2 text-white font-medium hover:bg-yellow-800"
             >
               {String(pendingReviewRequest?.status).toUpperCase() ===
               "COMPLETION_PENDING"
