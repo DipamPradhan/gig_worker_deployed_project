@@ -264,7 +264,7 @@ const BecomeWorker = () => {
             />
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-6">
+          <div className=" border border-blue-800 rounded p-4 mb-6">
             <h4 className="font-medium text-blue-800 mb-2">
               What happens next?
             </h4>
