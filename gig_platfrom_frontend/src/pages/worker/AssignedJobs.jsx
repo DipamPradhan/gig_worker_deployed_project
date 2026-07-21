@@ -22,18 +22,18 @@ const AssignedJobs = () => {
     status: null,
   });
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
-  //       useEffect(() => {
-  //         fetchJobs();
-  //   const interval = setInterval(() => {
-  //     fetchJobs();
-  //   }, 1000);
-
-  //   return () => clearInterval(interval);
+  // useEffect(() => {
+  //   fetchJobs();
   // }, []);
+
+        useEffect(() => {
+          fetchJobs();
+    const interval = setInterval(() => {
+      fetchJobs();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchJobs = async () => {
     try {
