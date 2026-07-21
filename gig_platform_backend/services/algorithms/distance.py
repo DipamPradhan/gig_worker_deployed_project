@@ -1,4 +1,4 @@
-from math import radians, sin, cos, sqrt, atan2
+from math import radians, sin, cos, sqrt, asin
 
 
 def haversine_km(lat1, lon1, lat2, lon2):
@@ -22,5 +22,5 @@ def haversine_km(lat1, lon1, lat2, lon2):
     lat2_rad = radians(lat2)
 
     a = sin(d_lat / 2) ** 2 + cos(lat1_rad) * cos(lat2_rad) * sin(d_lon / 2) ** 2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    c = 2 * asin(sqrt(a))
     return earth_radius_km * c
