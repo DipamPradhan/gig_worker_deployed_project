@@ -1,4 +1,5 @@
 // Date formatting utilities
+// eg Jul 25, 2026 instead of 2026-07-25T08:30:00Z
 export const formatDate = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
@@ -8,7 +9,7 @@ export const formatDate = (dateString) => {
     day: "numeric",
   });
 };
-
+// eg Jul 25, 2026, 02:30 PM
 export const formatDateTime = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
@@ -41,12 +42,14 @@ export const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
+
+// to make text short "this is a long story ..."
 export const truncate = (str, maxLength = 100) => {
   if (!str || str.length <= maxLength) return str;
   return `${str.slice(0, maxLength)}...`;
 };
 
-// Status utilities
+// Status utilities to get the color of text
 export const getStatusColor = (status) => {
   const colors = {
     PENDING: "yellow",
@@ -77,7 +80,7 @@ export const getNextStatuses = (currentStatus) => {
   return statusFlow[currentStatus] || [];
 };
 
-// Validation utilities
+// Validation utilities for email and phone number
 export const isValidEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -89,6 +92,9 @@ export const isValidPhone = (phone) => {
 };
 
 // Number utilities
+
+// eg 1200 , $1200.00
+// feature not used , 
 export const formatCurrency = (amount, currency = "USD") => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -104,6 +110,7 @@ export const formatDistance = (km) => {
 };
 
 // Array utilities
+// groupin active busy inactive workers
 export const groupBy = (array, key) => {
   return array.reduce((result, item) => {
     const group = item[key];
@@ -115,6 +122,7 @@ export const groupBy = (array, key) => {
   }, {});
 };
 
+// eg sorting based on rating
 export const sortBy = (array, key, order = "asc") => {
   return [...array].sort((a, b) => {
     if (order === "asc") {
@@ -124,6 +132,7 @@ export const sortBy = (array, key, order = "asc") => {
   });
 };
 
+// to get the location from browser
 export const getCurrentBrowserLocation = (options = {}) =>
   new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -167,6 +176,8 @@ export const getCurrentBrowserLocation = (options = {}) =>
     );
   });
 
+
+  // not used currently feature disabled from ui for better accuracy in location
 export const reverseGeocodeAddress = async (latitude, longitude) => {
   const params = new URLSearchParams({
     format: "jsonv2",
