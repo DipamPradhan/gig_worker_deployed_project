@@ -16,6 +16,8 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   if (!isAuthenticated()) {
     // Redirect to login page but save the attempted url
     return <Navigate to="/login" state={{ from: location }} replace />;
+    // state is used to store the path that user directly wanted to calll but
+    //  failed for auth, so redirect after auth complete
   }
 
   // Check if user has required role
