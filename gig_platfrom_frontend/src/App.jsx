@@ -65,16 +65,16 @@
       <AuthProvider>
         <Router>
           <Routes>
-            {/* Public Routes */}
+            {/* Public Routes accessible to all withou auth  */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
             {/* Home redirect */}
             <Route path="/" element={<HomeRedirect />} />
 
-            {/* Protected Routes with Layout */}
+            {/* Protected Routes with Layout  only accessible by allowed roles*/}
             <Route element={<Layout />}>
-              {/* Shared Profile - accessible by all authenticated users */}
+              {/* Shared Profile - accessible by all authenticated users  */}
               <Route
                 path="/profile"
                 element={
@@ -84,7 +84,7 @@
                 }
               />
 
-              {/* Customer Routes */}
+              {/* routes allowed to Customer  */}
               <Route
                 path="/customer/dashboard"
                 element={
@@ -134,7 +134,7 @@
                 }
               />
 
-              {/* Worker Routes */}
+              {/* routes allowed to Worker  */}
               <Route
                 path="/worker/dashboard"
                 element={
@@ -143,6 +143,7 @@
                   </ProtectedRoute>
                 }
               />
+              {/* route allowed to customer and worker both  */}
               <Route
                 path="/worker/become-worker"
                 element={
@@ -185,7 +186,7 @@
               />
             </Route>
 
-            {/* 404 Route */}
+            {/* page not found 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
