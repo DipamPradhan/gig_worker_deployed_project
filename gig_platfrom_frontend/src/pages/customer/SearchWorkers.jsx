@@ -103,11 +103,13 @@ const SearchWorkers = () => {
       const data = await execute(() => servicesService.getRequests());
       const requests = Array.isArray(data) ? data : data.results || [];
       const pending = requests.find((request) => {
+        
         const status = String(request.status).toUpperCase();
         return (
           status === "COMPLETION_PENDING" ||
           (status === "COMPLETED" && !request.has_review)
         );
+        
       });
       setPendingReviewRequest(pending || null);
     } catch (err) {

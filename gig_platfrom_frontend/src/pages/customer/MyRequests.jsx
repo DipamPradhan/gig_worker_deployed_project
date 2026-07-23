@@ -161,7 +161,7 @@ const MyRequests = () => {
                         className="truncate"
                         title={request.request_address || "Not specified"}
                       >
-                        Address: {request.request_address || "Not specified"}
+                        Address: { request.request_address || "Not specified"}
                       </p>
                       <p>
                         Created: {new Date(request.created_at).toLocaleString()}
