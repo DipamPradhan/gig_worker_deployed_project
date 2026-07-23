@@ -74,6 +74,7 @@
         // Handle field-specific errors from backend
         if (err.response?.data) {
           const backendErrors = err.response.data;
+          // for object type errors
           if (typeof backendErrors === "object" && !backendErrors.detail) {
             const newFieldErrors = {};
             Object.keys(backendErrors).forEach((key) => {
@@ -87,6 +88,7 @@
               .join(", ");
             setError(errorMessages || "Registration failed. Please check your input.");
           } else {
+            // for detail errors 
             setError(backendErrors.detail || "Registration failed. Please try again.");
           }
         } else {
