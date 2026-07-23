@@ -31,11 +31,13 @@ const api = axios.create({
   // Response interceptor to handle token refresh
   // checking to see if the access token is expired and in case refreshing it. 
   api.interceptors.response.use(
+    // if everything fine send response normal
     (response) => response,
+    // if error
     async (error) => {
       const originalRequest = error.config;
 
-      // If error is 401 and we haven't tried to refresh yet
+      // If error is 401  (unauthorized check) and we haven't tried to refresh yet
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
