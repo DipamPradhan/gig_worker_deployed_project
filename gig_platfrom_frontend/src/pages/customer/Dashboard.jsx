@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, act } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -101,6 +101,7 @@ const CustomerDashboard = () => {
     (request) =>
       request?.status &&
       !["completed", "cancelled"].includes(request.status.toLowerCase()),
+    
   );
 
   const confirmCompletion = async (requestId) => {
@@ -115,6 +116,12 @@ const CustomerDashboard = () => {
       // Error handled by useApi through dashboard refreshes
     }
   };
+
+
+
+const workerName =
+  activeRequest?.assigned_worker_details?.worker?.username ?? "";
+  
 
   return (
     <div>
@@ -206,6 +213,9 @@ const CustomerDashboard = () => {
           />
         ) : activeRequest ? (
           <div className="space-y-2">
+          
+           <span>{(activeRequest.assigned_worker_details?.first_name)} </span> 
+           <span>{(activeRequest.assigned_worker_details?.last_name)}</span>
             <ProgressBar status={activeRequest.status} />
           </div>
         ) : (

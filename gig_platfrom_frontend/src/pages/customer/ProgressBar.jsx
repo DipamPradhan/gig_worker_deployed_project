@@ -40,7 +40,8 @@ const normalizeStatus = (status) => {
   return value;
 };
 
-const ProgressBar = ({ status }) => {
+const ProgressBar = ({ status  }) => {
+ 
   if (!status) return null;
 
   const normalized = normalizeStatus(status);
@@ -57,6 +58,7 @@ const ProgressBar = ({ status }) => {
   const progressRatio = currentStep > 0 ? currentStep / totalSteps : 0;
 
   return (
+    <div className="">
     <div className="w-full px-6 py-10">
       {/*  TRACK WRAPPER */}
       <div className="relative flex justify-between items-center">
@@ -105,6 +107,7 @@ const ProgressBar = ({ status }) => {
           );
         })}
       </div>
+    </div>
     </div>
   );
 };
