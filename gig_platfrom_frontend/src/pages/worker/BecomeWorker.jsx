@@ -201,7 +201,7 @@
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label="Hourly Rate ($)"
+                label="Hourly Rate (NPR)"
                 name="hourly_rate"
                 type="number"
                 step="0.01"

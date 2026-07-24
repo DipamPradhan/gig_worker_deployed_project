@@ -12,6 +12,7 @@ import {
   StatusBadge,
   ConfirmModal,
 } from "../../components/common";
+import { truncate } from "../../utils";
 
 const MyRequests = () => {
   const { loading, error, execute, clearError } = useApi();
@@ -161,7 +162,7 @@ const MyRequests = () => {
                         className="truncate"
                         title={request.request_address || "Not specified"}
                       >
-                        Address: { request.request_address || "Not specified"}
+                        Address: { truncate (request.request_address ,100)|| "Not specified"}
                       </p>
                       <p>
                         Created: {new Date(request.created_at).toLocaleString()}

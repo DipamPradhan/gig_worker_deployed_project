@@ -404,7 +404,7 @@ const SearchWorkers = () => {
                     <p>
                       <span className="font-medium">Hourly Rate:</span>{" "}
                       {selectedWorker.hourly_rate
-                        ? `$${selectedWorker.hourly_rate}`
+                        ? `NPR ${selectedWorker.hourly_rate}`
                         : "N/A"}
                     </p>
                     <p>
