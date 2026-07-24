@@ -12,7 +12,7 @@ import {
   EmptyState,
 } from "../../components/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const getRankTheme = (rank) => {
   const unifiedCardStyle = "border-purple-200 bg-purple-50";
@@ -298,7 +298,9 @@ const SearchWorkers = () => {
                         {rank}
                       </div>
                       <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center">
-                        <span className="text-2xl">👤</span>
+                        <span className="text-2xl">
+                          <FontAwesomeIcon icon={faUser} />
+                        </span>
                       </div>
                       <div>
                         {badges.length > 0 ? (
