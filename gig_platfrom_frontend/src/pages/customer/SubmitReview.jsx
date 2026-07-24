@@ -169,6 +169,7 @@ const SubmitReview = () => {
               type="button"
               variant="outline"
               onClick={() => navigate(-1)}
+              // browser back button
             >
               Cancel
             </Button>
