@@ -25,7 +25,7 @@ from .serializers import (
 	ServiceRequestStatusUpdateSerializer,
 )
 
-
+#every eligible worker, calculate their recommendation score, sort them, and return the top N workers to the user
 def _recommended_candidates(user, category_id=None, max_radius_km=None):
 	if not hasattr(user, "user_profile"):
 		return []
@@ -42,13 +42,18 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 	except (TypeError, ValueError):
 		return []
 
+	#preffered radius 
 	radius = float(max_radius_km or user_profile.preferred_radius_km)
+
+	#already reviewed workers by the user to make hired before = True
 	reviewed_worker_ids = set(
 		WorkerReview.objects.filter(
 			reviewer=user,
 			moderation_status=WorkerReview.ModerationStatus.APPROVED,
 		).values_list("worker_id", flat=True)
 	)
+
+	#eligible or verified workers
 	workers = WorkerProfile.objects.filter(
 		verification_status=WorkerProfile.VERIFICATION_STATUS.VERIFIED,
 		availability_status=WorkerProfile.AVAILABILITY_STATUS.ACTIVE,
@@ -63,6 +68,8 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 		)	
 	).distinct()
 
+
+	#filter the categories that user has selected a specific category
 	if category_id:
 		category_name = str(category_id)
 		try:
@@ -73,9 +80,11 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 			pass
 		workers = workers.filter(service_category__iexact=category_name)
 
+		
 	result = []
 	for worker in workers:
 		try:
+			#haversine implementation, function call
 			distance_km = haversine_km(
 				user_latitude,
 				user_longitude,
@@ -84,11 +93,14 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 			)
 		except (TypeError, ValueError):
 			continue
+
 		worker_radius = float(worker.service_radius_km)
 		effective_radius = min(radius, worker_radius)
+		#radius filtering or check
 		if distance_km > effective_radius:
 			continue
 
+		#prev recommendation score if exists
 		score_obj = WorkerRecommendationScore.objects.filter(worker=worker).first()
 		if score_obj:
 			worker_bayesian_rating = score_obj.bayesian_rating
@@ -97,6 +109,7 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 			worker_bayesian_rating = bayesian_rating(worker.average_rating, worker.total_reviews)
 			worker_sentiment_score = 0
 
+		# calculate final score
 		final_score = recommendation_score(
 			distance_km=distance_km,
 			bayesian_rate=worker_bayesian_rating,
@@ -119,10 +132,11 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 			}
 		)
 
+	#sorted descending order by final score
 	result.sort(key=lambda item: item["final_score"], reverse=True)
 	return result
 
-
+#simply update the worker availability status if it is different from the current status
 def _set_worker_availability(worker_profile, availability_status):
 	if worker_profile.availability_status == availability_status:
 		return False
@@ -131,7 +145,7 @@ def _set_worker_availability(worker_profile, availability_status):
 	worker_profile.save(update_fields=["availability_status", "updated_at"])
 	return True
 
-
+#latest completed service request for the user that has not been reviewed yet
 def _get_pending_review_request_for_user(user):
 	return (
 		ServiceRequest.objects.filter(
@@ -144,7 +158,7 @@ def _get_pending_review_request_for_user(user):
 		.first()
 	)
 
-
+# Get a list of all active service categories.
 class ServiceCategoryListView(generics.ListAPIView):
 	permission_classes = [IsAuthenticated]
 	serializer_class = ServiceCategorySerializer
@@ -160,7 +174,10 @@ class ServiceRequestListCreateView(generics.ListCreateAPIView):
 		return ServiceRequest.objects.filter(requester=user).select_related(
 			"category", "assigned_worker", "assigned_worker__worker"
 		)
-
+	#previous review
+	#preferred worker
+	#matching
+	#serviceRequestEvent requested
 	def perform_create(self, serializer):
 		pending_review_request = _get_pending_review_request_for_user(self.request.user)
 		if pending_review_request:
@@ -189,7 +206,7 @@ class ServiceRequestListCreateView(generics.ListCreateAPIView):
 			detail=f"Service request sent to selected worker {preferred_worker_profile.worker_id}.",
 		)
 
-
+#worker recommendations	
 class RecommendedWorkerSearchView(generics.GenericAPIView):
 	permission_classes = [IsAuthenticated]
 	serializer_class = WorkerRecommendationResultSerializer
@@ -230,7 +247,7 @@ class RecommendedWorkerSearchView(generics.GenericAPIView):
 
 		return Response(payload, status=status.HTTP_200_OK)
 
-
+#inbox for the worker to see all the requests that are assigned to them and are in the matching state
 class WorkerRequestInboxView(generics.ListAPIView):
 	permission_classes = [IsAuthenticated, IsWorkerUserType]
 	serializer_class = ServiceRequestSerializer
@@ -241,7 +258,7 @@ class WorkerRequestInboxView(generics.ListAPIView):
 			status=ServiceRequest.Status.MATCHING,
 		).select_related("category", "requester", "assigned_worker", "assigned_worker__worker")
 
-
+#accept or reject by worker
 class WorkerRequestActionView(generics.GenericAPIView):
 	permission_classes = [IsAuthenticated, IsWorkerUserType]
 	serializer_class = WorkerRequestActionSerializer
@@ -328,7 +345,7 @@ class WorkerRequestActionView(generics.GenericAPIView):
 
 		return Response(ServiceRequestSerializer(service_request).data, status=status.HTTP_200_OK)
 
-
+#history of request state
 class WorkerAssignedRequestListView(generics.ListAPIView):
 	permission_classes = [IsAuthenticated, IsWorkerUserType]
 	serializer_class = ServiceRequestSerializer
@@ -346,7 +363,7 @@ class WorkerAssignedRequestListView(generics.ListAPIView):
 			],
 		).select_related("category", "requester", "assigned_worker", "assigned_worker__worker")
 
-
+#cancel request by customer before worker accepts it
 class ServiceRequestCustomerCancelView(generics.GenericAPIView):
 	permission_classes = [IsAuthenticated]
 	serializer_class = ServiceRequestCancelSerializer
@@ -385,7 +402,7 @@ class ServiceRequestCustomerCancelView(generics.GenericAPIView):
 
 		return Response(ServiceRequestSerializer(service_request).data, status=status.HTTP_200_OK)
 
-
+#change the states of work
 class ServiceRequestWorkerStatusUpdateView(generics.GenericAPIView):
 	permission_classes = [IsAuthenticated, IsWorkerUserType]
 	serializer_class = ServiceRequestStatusUpdateSerializer
@@ -455,7 +472,7 @@ class ServiceRequestWorkerStatusUpdateView(generics.GenericAPIView):
 
 		return Response(ServiceRequestSerializer(service_request).data, status=status.HTTP_200_OK)
 
-
+#confirm completion by customer 
 class ServiceRequestCustomerConfirmCompletionView(generics.GenericAPIView):
 	permission_classes = [IsAuthenticated]
 	serializer_class = ServiceRequestSerializer

@@ -6,6 +6,7 @@ from services.models import ServiceRequest
 from accounts.models import CustomUser,WorkerProfile
 
 class WorkerReview(models.Model):
+	"""Model representing a review of a worker by a reviewer for a specific service request."""
 	class ModerationStatus(models.TextChoices):
 		PENDING = "PENDING", "Pending"
 		APPROVED = "APPROVED", "Approved"
@@ -55,6 +56,7 @@ class WorkerReview(models.Model):
 
 
 class ReviewSentiment(models.Model):
+	"""Model representing the sentiment analysis of a worker review."""
 	class Label(models.TextChoices):
 		POSITIVE = "POSITIVE", "Positive"
 		NEUTRAL = "NEUTRAL", "Neutral"

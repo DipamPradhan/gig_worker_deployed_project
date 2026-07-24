@@ -27,6 +27,7 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
+    #create method to handle user registration and return the created user data
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -39,6 +40,7 @@ class MeView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+    #return current authenticated user
     def get_object(self):
         return self.request.user
     
@@ -47,10 +49,12 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
+    #profile of current authenticated user, if not exists create one
     def get_object(self):
         user_profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
         return user_profile
 
+    #just update the lat long of service if worker
     def perform_update(self, serializer):
         profile = serializer.save()
         user = self.request.user
@@ -90,6 +94,7 @@ class WorkerProfileView(generics.RetrieveUpdateAPIView):
             return None
         return user.worker_profile
 
+    #return 404 if user is not a worker
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj is None:
@@ -117,6 +122,7 @@ class WorkerDocumentUploadView(generics.CreateAPIView):
     serializer_class = WorkerDocumentSerializer
     permission_classes = [IsAuthenticated]
     queryset = WorkerDocument.objects.all()
+    # Specify the parsers to handle file uploads
     parser_classes = [MultiPartParser, FormParser]
 
 class WorkerDocumentDeleteView(generics.DestroyAPIView):
