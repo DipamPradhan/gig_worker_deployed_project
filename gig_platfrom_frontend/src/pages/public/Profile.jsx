@@ -185,14 +185,15 @@
                   {user?.role}
                 </span>
               </div>
-              {user?.role === "worker" && (
+              {/* {user?.role === "worker" && (
                 <div>
                   <span className="text-gray-500">Worker Status:</span>
                   <span className="ml-2 text-gray-900">
                     Pending/managed by admin
+                    {console.log(user)}
                   </span>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 
