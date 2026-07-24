@@ -177,7 +177,7 @@ export const getCurrentBrowserLocation = (options = {}) =>
   });
 
 
-  // not used currently feature disabled from ui for better accuracy in location
+  // used for gettting  address name from latitude and longitute 
 export const reverseGeocodeAddress = async (latitude, longitude) => {
   const params = new URLSearchParams({
     format: "jsonv2",
