@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -10,13 +11,15 @@ const Footer = () => {
           © {currentYear} GigWork. All rights reserved.
         </p>
 
-        <a
-          href='https://api.gig-work.me/admin/'
+        <Link
+          to='https://api.gig-work.me/admin/'
+          target='_blank'
+        //   replace
           title='Admin login'
           className='font-medium text-yellow-500 transition-colors hover:text-[#e6f2f7] underline-offset-4 hover:underline'
         >
           Admin Portal
-        </a>
+        </Link>
       </div>
     </footer>
   )
