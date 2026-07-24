@@ -16,6 +16,8 @@ import {
   LocationPickerModal,
   Label,
 } from "../../components/common";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 const BecomeWorker = () => {
   const navigate = useNavigate();
@@ -124,7 +126,7 @@ const BecomeWorker = () => {
     return (
       <Card>
         <div className="text-center py-8">
-          <div className="text-4xl mb-4">✅</div>
+          <div className="text-4xl mb-4"><FontAwesomeIcon icon={faCheck} /></div>
           <h2 className="text-xl font-medium text-gray-900 mb-2">
             You're already a worker!
           </h2>
