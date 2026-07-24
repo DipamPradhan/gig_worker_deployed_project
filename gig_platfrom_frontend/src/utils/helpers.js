@@ -93,7 +93,7 @@ export const isValidPhone = (phone) => {
 
 // Number utilities
 
-// eg 1200 , $1200.00
+// eg 2500 , NPR 2,500.00
 // feature not used , 
 export const formatCurrency = (amount, currency = "NPR") => {
   return new Intl.NumberFormat("ne-NP", {
