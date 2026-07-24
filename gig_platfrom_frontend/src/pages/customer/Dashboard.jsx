@@ -197,7 +197,7 @@ const CustomerDashboard = () => {
           <EmptyState
             title="No requests yet"
             message="You haven't created any service requests yet."
-            icon="📋"
+            icon=""
             action={{
               label: "Find Workers",
               onClick: () =>
