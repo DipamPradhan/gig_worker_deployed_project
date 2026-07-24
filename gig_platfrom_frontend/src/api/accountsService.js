@@ -10,14 +10,14 @@
     },
 
     // GET /accounts/me/
-    // return account data
+    // return account data custom user on backend
     getMe: async () => {
       const response = await api.get("/accounts/me/");
       return response.data;
     },
 
     // GET /accounts/profile/
-    // return profile of user
+    // return profile of user along with location worker , customer
     getProfile: async () => {
       const response = await api.get("/accounts/profile/");
       return response.data;
