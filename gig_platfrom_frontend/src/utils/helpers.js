@@ -95,8 +95,8 @@ export const isValidPhone = (phone) => {
 
 // eg 1200 , $1200.00
 // feature not used , 
-export const formatCurrency = (amount, currency = "USD") => {
-  return new Intl.NumberFormat("en-US", {
+export const formatCurrency = (amount, currency = "NPR") => {
+  return new Intl.NumberFormat("ne-NP", {
     style: "currency",
     currency,
   }).format(amount);
