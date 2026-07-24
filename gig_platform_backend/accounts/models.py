@@ -199,7 +199,7 @@ class WorkerProfile(models.Model):
         - service_latitude (DecimalField): Latitude coordinate of the worker's primary service location.
         - service_longitude (DecimalField): Longitude coordinate of the worker's primary service location.
         - service_radius_km (DecimalField): Radius in kilometers within which the worker provides services.
-            Default: 10.00 km.
+            Default: 5.00 km.
         - average_rating (DecimalField): Average rating based on completed jobs (scale: 0.00-5.00).
             Default: 0.00.
         - total_reviews (PositiveIntegerField): Number of reviews received from customers. Default: 0.
@@ -259,7 +259,7 @@ class WorkerProfile(models.Model):
         max_digits=9, decimal_places=6, null=True, blank=True, db_index=True
     )
     service_radius_km = models.DecimalField(
-        max_digits=5, decimal_places=2, default=10.00
+        max_digits=5, decimal_places=2, default=5.00
     )
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     total_reviews = models.PositiveIntegerField(default=0)

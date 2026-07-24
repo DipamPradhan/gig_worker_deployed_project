@@ -233,7 +233,7 @@
               />
             </div>
 
-            <Input
+            {/* <Input
               label="Preferred Radius (km)"
               name="preferred_radius_km"
               type="number"
@@ -242,7 +242,7 @@
               step="0.1"
               value={values.preferred_radius_km}
               onChange={handleChange}
-            />
+            /> */}
 
             <p className="text-sm text-gray-500 mb-4">
               Use your current location to update coordinates quickly.

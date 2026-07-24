@@ -300,7 +300,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "service_radius_km",
-                    models.DecimalField(decimal_places=2, default=10.0, max_digits=5),
+                    models.DecimalField(decimal_places=2, default=5.0, max_digits=5),
                 ),
                 (
                     "average_rating",
