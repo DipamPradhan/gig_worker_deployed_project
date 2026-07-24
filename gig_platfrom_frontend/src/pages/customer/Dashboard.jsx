@@ -213,9 +213,25 @@ const workerName =
           />
         ) : activeRequest ? (
           <div className="space-y-2">
-          
+            <div className="flex flex-between gap-2">
+              <p>
+            <span className="font-bold text-custom-blue">Title: </span>
+           <span>{(activeRequest.title)} </span> 
+  
+           </p>
+          {/* <p>
+          <span className="font-bold text-custom-blue">Worker: </span>
            <span>{(activeRequest.assigned_worker_details?.first_name)} </span> 
            <span>{(activeRequest.assigned_worker_details?.last_name)}</span>
+</p>
+
+           <p>
+            <span className="font-bold text-custom-blue">Service: </span>
+           <span>{(activeRequest.category_name)} </span> 
+  
+           </p> */}
+           </div>
+           {console.log(activeRequest)}
             <ProgressBar status={activeRequest.status} />
           </div>
         ) : (
