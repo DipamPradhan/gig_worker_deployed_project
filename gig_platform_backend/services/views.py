@@ -46,6 +46,7 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 	radius = float(max_radius_km or user_profile.preferred_radius_km)
 
 	#already reviewed workers by the user to make hired before = True
+	#gets the user's approved reviews and extracts the worker IDs into a set for quick lookup - 124
 	reviewed_worker_ids = set(
 		WorkerReview.objects.filter(
 			reviewer=user,
@@ -120,6 +121,7 @@ def _recommended_candidates(user, category_id=None, max_radius_km=None):
 		result.append(
 			{
 				"worker": worker,
+				#hired before is True if the worker has been reviewed by the user before, otherwise False
 				"hired_before": worker.id in reviewed_worker_ids,
 				"user_latitude": user_latitude,
 				"user_longitude": user_longitude,
